@@ -8,7 +8,7 @@ nav: true
 
 ### Epidemiological modeling
 
-Mathematical models for the evolution of epidemics range from simple deterministic models of continuous time to sophisticated computer simulation schemes. As early as 1766, Daniel Bernoulli developed a model for the study of smallpox. In the past century, compartmental models have been proposed in which the population is divided into categories such as susceptible, exposed, infected, removed, and whose interaction is described in terms of differential equations. An alternative strategy, adopted here, is empirical modeling. In this strategy, the model is constructed by direct application of statistical techniques on observations of the behavior of a system, without specific assumptions about the principles that rule its dynamics.     
+Mathematical models for the evolution of epidemics range from simple deterministic models of continuous time to sophisticated computer simulation schemes. As early as 1766, Daniel Bernoulli developed a model for the study of smallpox. In the past century, compartmental models have been proposed in which the population is divided into categories such as susceptible, exposed, infected, removed, and whose interaction is described in terms of differential equations. An alternative strategy, adopted here, is empirical modeling. In this strategy, the model is constructed from  observations of the behavior of a system, without specific assumptions about the principles that rule its dynamics.     
 
 Our intention is to contribute to a mathematical reference base on COVID-19 for studying its evolution dynamics, and which could be used for planning public policies of prevention and combat.
 
