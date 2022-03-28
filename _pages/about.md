@@ -1,24 +1,35 @@
 ---
 layout: about
-title: about
+title: About
 permalink: /
-subtitle: <a href='#'>Affiliations</a>. Address. Contacts. Moto. Etc.
+subtitle: Ph.D., Professor of Computer Science  at <a href="http://www.unb.br">University of Brasília</a> (Brazil)
 
 profile:
   align: right
   image: prof_pic.jpg
-  address: >
-    <p>555 your office number</p>
-    <p>123 your address street</p>
-    <p>Your City, State 12345</p>
+#  address: >
+#    <p>Department of Computer Science</p>  
+#    <p>University of Brasília</p>  
+#    <p>Brasília DF 70910-900, Brazil</p>  
+#    <p><i class="fa fa-envelope"></i> <a href="mailto:lucero@un.br">lucero@unb.br</a></p>
 
-news: true  # includes a list of news items
-selected_papers: true # includes a list of papers marked as "selected={true}"
-social: true  # includes social icons at the bottom of the page
+news: false  # includes a list of news items
+selected_papers: false # includes a list of papers marked as "selected={true}"
+social: false  # includes social icons at the bottom of the page
 ---
 
-Write your biography here. Tell the world about yourself. Link to your favorite [subreddit](http://reddit.com). You can put a picture in, too. The code is already in, just name your picture `prof_pic.jpg` and put it in the `img/` folder.
+I am interested in most applications of math and computing to voice and speech production studies. The vocal folds at the larynx constitute a biomechanical oscillator that acts as a sound source in phonation. Under proper conditions, the air flow through the glottis induces their oscillation. The oscillation, in turn, modulates the airflow, which results in the generation of an acoustical wave. This mechanism of sound production in common to most mammals, and to songbirds by action of their syrinx's membranes. Speech is then the result of the combination of phonation with articulation. In my work, I use mathematical and computational models of this system to characterize its physical principles, and contribute to the development of engineering tools for analysis, clinical diagnosis and treatment. Specific research topics have included: dynamics of the vocal fold oscillation, physics-based synthesis of vocal timbre, analysis of aerodynamic and articulatory patterns of speech, acoustic analysis of voice, and muscle-based 3D animation of speech facial movements.
 
-Put your address / P.O. box / other info right below your picture. You can also disable any these elements by editing `profile` property of the YAML header of your `_pages/about.md`. Edit `_bibliography/papers.bib` and Jekyll will render your [publications page](/al-folio/publications/) automatically.
+I have also worked on modeling problems in epidemiology, formal language theory, geometric folding operations, and other areas. 
 
-Link to your social media connections, too. This theme is set up to use [Font Awesome icons](http://fortawesome.github.io/Font-Awesome/) and [Academicons](https://jpswalsh.github.io/academicons/), like the ones below. Add your Facebook, Twitter, LinkedIn, Google Scholar, or just disable all of them.
+### Current courses
+
+Automata and Computability, Theoretical Foundations of Computing
+
+### Contact
+
+Department of Computer Science  
+University of Brasília  
+Brasília DF 70910-900, Brazil  
+<i class="fa fa-envelope"></i> <a href="mailto:lucero@un.br">lucero@unb.br</a>
+
