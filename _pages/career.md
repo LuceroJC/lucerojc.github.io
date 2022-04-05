@@ -14,8 +14,8 @@ nav: true
 ### Academic Positions
 
 - Professor (full), Dept. Computer Science, University of Brasília, since 2011.
-- Visiting Research Professor at Laboratory of Geophysical and Industrial Flows (LEGI), Grenoble Alpes University (France), Jun - Aug 2019 and Nov 2019 - Jan 2020. Support: Grenoble Alpes University, Campagne Chercheurs Invités 2019.
-- “Poste Rouge” Associated Researcher of the CNRS (France) at GIPSA-Lab (Grenoble), Sep 2010 - Mar 2011.
+- Visiting Researcher at Laboratory of Geophysical and Industrial Flows (LEGI), Grenoble Alpes University (France), Jun - Aug 2019 and Nov 2019 - Jan 2020.
+- Visiting Researcher at GIPSA-Lab (Grenoble, France), Sep 2010 - Mar 2011.
 - Faculty member of the Dept. Mathematics, University of Brasília, 1997-2011. Last rank: Associate Professor.
 - Postdoctoral Fellow at both Dept. Psychology, Queen's University (Canada), and Dept. Computer Science, University of Toronto, 1996-1997.
 - Researcher of the CNPq (Brasil) at Dept. Electrical Engineering, Federal University of Santa Catarina, 1993-1994, and Dept. Computer Science, University of Brasília, 1995-1996.
