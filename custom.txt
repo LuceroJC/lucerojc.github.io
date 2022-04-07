@@ -13,6 +13,10 @@ _includes/header.html
   
   line 7: capitalize "about"
   line 9, remove the bold tags for {{ site.first_name }}
+
+_includes/footer.html
+
+  line 4: comment out the copyright notice
   
 assets/main.scss
 
