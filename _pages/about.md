@@ -1,6 +1,6 @@
 ---
 layout: about
-title: About
+title: Home
 permalink: /
 subtitle: Ph.D., Professor of Computer Science  at <a href="http://www.unb.br">University of Brasília</a> (Brazil)
 

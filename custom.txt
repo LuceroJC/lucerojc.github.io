@@ -11,7 +11,7 @@ _layouts/page.html
 
 _includes/header.html
   
-  line 7: capitalize "about"
+  line 7, 29-31: replace "about" with "Home"
   line 9, remove the bold tags for {{ site.first_name }}
 
 _includes/footer.html
