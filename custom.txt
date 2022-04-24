@@ -17,6 +17,9 @@ _includes/header.html
 _includes/footer.html
 
   line 4: comment out the copyright notice
+  lines 11 and 24: add link at the end of footers
+           
+  <span style="float: right; text-align: right"><a href="https://lucerojc.github.io/scriptorium/">Scriptorium</a></span>/
   
 assets/main.scss
 
