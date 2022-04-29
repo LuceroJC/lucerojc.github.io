@@ -15,7 +15,7 @@ This project intends to contribute to a mathematical reference base on COVID-19 
 ### Publication
 
 JC Lucero, "Identification of COVID-19 mortality patterns in Brazil
-            by a functional QR decomposition analysis", Biophysical Reviews and Letters, accepted. Preprint at <a href="https://arxiv.org/abs/2103.08794">	arXiv:2103.08794</a> [stat.AP].    
+            by a functional QR decomposition analysis", <i>Biophysical Reviews and Letters</i> 17, 33--41 (2002).
 
 <blockquote style="font-size:1rem"><b>Abstract:</b> The subset selection problem of linear algebra is applied to identify independent patterns of COVID-19 evolution within Brazil. The data consist of a set of mortality curves in states of Brazil. A subset of the most independent curves is selected by using a functional version of the QR matrix decomposition technique with column pivoting. The selected subset is used next as a basis to represent the remaining curves filtering out any data redundancy. For each independent curve, an associated epidemiological region of influence is defined. The results show two main independent curves with a similar two-peak pattern and a 50-day shift between the patterns. Two main epidemiological regions are next identified: one encompassing most of the country from the center and northeast states to the south, an another one containing the Amazonian region at the northwest.</blockquote>
 
