@@ -24,3 +24,6 @@ assets/main.scss
       max-width: 150px;
     }
   
+_sass/themes.scss:
+
+  line 17: change the card background color to a light grey #f6f6f9
