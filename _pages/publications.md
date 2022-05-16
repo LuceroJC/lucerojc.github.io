@@ -10,7 +10,7 @@ nav: true
 
 <div class="publications">
 
-{%- for y in (1993..2022) reversed %}
+{%- for y in (1993..2023) reversed %}
   {% bibliography -f papers -q @*[year={{y}}]* %}
 {% endfor %}
 
