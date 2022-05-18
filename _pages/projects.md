@@ -1,12 +1,14 @@
 ---
 layout: page
-title: projects
-permalink: /projects/
-description: A growing collection of your cool projects.
-nav: false
-display_categories: [work, fun]
+title: Scriptorium
+permalink: /scriptorium/
+comment: Reconstruction of old printed documents using TeX. Just for fun.
+nav: true
+display_categories: [Bible, work, fun]
 horizontal: false
+order: 5
 ---
+
 
 <!-- pages/projects.md -->
 <div class="projects">

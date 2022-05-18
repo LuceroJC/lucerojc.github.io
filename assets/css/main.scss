@@ -17,3 +17,21 @@ $max-content-width: {{ site.max_width }};
 .profile {
   max-width: 150px;
 }
+
+@media (min-width: 900px) {
+  .wider {
+    width: 880px;
+    margin-left: -50px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .wider {
+    width: 980px;
+    margin-left: -100px;
+  }
+}
+
+.card-title {
+  font-size: 1.2rem;
+}

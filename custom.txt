@@ -12,11 +12,16 @@ _includes/header.html
   
   line 7, 29-31: replace "about" with "Home"
   line 9, remove the bold tags for {{ site.first_name }}
-
+  line 48: change sort: "title" -> sort: "order"
+  
 _includes/footer.html
 
   line 4: comment out the copyright notice
   
+_includes/projects.html
+
+  line 16: delete text-lowercase, change h3 to p
+
 assets/main.scss
 
   add:
@@ -26,4 +31,6 @@ assets/main.scss
   
 _sass/themes.scss:
 
-  line 17: change the card background color to a light grey #f6f6f9
+  change:
+    --global-bg-color: #fcfcfc; //{$white-color};
+    --global-card-bg-color: #{$code-bg-color-light}; //{$white-color}

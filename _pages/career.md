@@ -4,6 +4,7 @@ permalink: /career/
 title: Career
 # description: Materials for courses you taught. Replace this text with your description.
 nav: true
+order: 2
 ---
 
 ### Education

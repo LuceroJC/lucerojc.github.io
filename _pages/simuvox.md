@@ -4,6 +4,7 @@ permalink: /simuvox/
 title: SimuVox
 comment: Computer simulation of disordered voices
 nav: true
+order: 4
 ---
 
 
