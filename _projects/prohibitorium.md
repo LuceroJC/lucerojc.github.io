@@ -2,14 +2,14 @@
 layout: page
 title: Index Librorum Prohibitorum (1564)
 #description: a project with a background image
-img: assets/img/index.png
-importance: 3
+img: assets/img/index_bg.png
+importance: 30
 category: Bible
 ---
 
 <div class="row wider">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="assets/img/index.png" title="" class="img-fluid rounded z-depth-1" %}
+        {% include figure.html path="assets/img/index_bg.png" title="" class="img-fluid rounded z-depth-1" %}
     </div>
     <div class="col-sm mt-3 mt-md-0">
         {% include figure.html path="assets/img/index_o.jpg" title="" class="img-fluid rounded z-depth-1" %}
