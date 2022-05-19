@@ -33,4 +33,4 @@ _sass/themes.scss:
 
   change:
     --global-bg-color: #fcfcfc; //{$white-color};
-    --global-card-bg-color: #{$code-bg-color-light}; //{$white-color}
+    --global-card-bg-color: #{$code-card-color-light}; //{$white-color}
