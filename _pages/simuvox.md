@@ -15,13 +15,13 @@ A disordered voice is a voice that is perceived as abnormal with regard to pitch
 
 <p class="mb-0"><i class="fa fa-volume-up"></i> Audio:</p>
 <ul>
-<li><a href="/disorder/">Voice disorders</a></li>
-<li><a href="/french/">French vowels</a></li>
+<li><a href="/disorder/"><b>Voice disorders</b></a></li>
+<li><a href="/french/"><b>French vowels</b></a></li>
 </ul>
 
 <div class="row mt-3 mx-auto" style="max-width:750px">
     <div class="col-sm mt-3 mt-md-0">
-        {% include figure.html path="/assets/img/simuvox.png" class="img-fluid" %}
+        {% include figure.html path="/assets/img/simuvox.png" class="img-fluid img-bg rounded" %}
     </div>
 </div>
 <div class="caption">

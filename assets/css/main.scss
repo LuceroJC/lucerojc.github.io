@@ -3,6 +3,19 @@
 ---
 @charset "utf-8";
 
+// Colors
+
+$white-color: #f6f6f6;
+$purple-color: #2698BA;// #52ab98;
+
+//$grey-color-dark: #6d7993;
+//$code-bg-color-light
+//$black-color
+//$grey-color
+//$purple-color
+//$grey-color-light
+
+
 // Dimensions
 $max-content-width: {{ site.max_width }};
 
@@ -33,5 +46,33 @@ $max-content-width: {{ site.max_width }};
 }
 
 .card-title {
-  font-size: 1.2rem;
+  font-size: 1rem;
+}
+
+footer.sticky-bottom {
+  background-color: #2b6777;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  .container {
+    color: #f2f2f2;
+  }
+  a {
+    color: #c8d8e4;
+    &:hover {
+      color: #f2f2f2;
+    }
+  }
+}
+
+.navbar {
+  background-color: #c8d8e4;
+}
+
+.img-bg {
+  background-color: lighten(#52ab98, 25%);
+  padding: 10px;
+}
+
+.card {
+  background-color: #eee2dc; 
 }

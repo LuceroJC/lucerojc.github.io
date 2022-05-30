@@ -28,4 +28,3 @@ assets/main.scss
     .profile {
       max-width: 150px;
     }
-  
