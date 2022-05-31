@@ -11,6 +11,7 @@ _layouts/page.html
 _includes/header.html
   
   line 7, 29-31: replace "about" with "Home"
+  line 8: remove class "font-weight-lighter"
   line 9, remove the bold tags for {{ site.first_name }}
   line 48: change sort: "title" -> sort: "order"
   
@@ -21,10 +22,3 @@ _includes/footer.html
 _includes/projects.html
 
   line 16: delete text-lowercase, change h3 to p
-
-assets/main.scss
-
-  add:
-    .profile {
-      max-width: 150px;
-    }

@@ -11,12 +11,12 @@ order: 4
 The context of this project is the clinical assessment of voice.
 A disordered voice is a voice that is perceived as abnormal with regard to pitch, loudness or timbre, and is often the consequence of a laryngeal pathology or physiological dysfunction. Here, we develop a simulator/synthesizer of speech sounds (SimuVox) which is capable of simulating a wide range of timbres of normal and disordered voices. We follow a physics-based approach by using models of the vocal fold vibration, glottal aerodynamics and acoustic wave propagation in the vocal tract, which allows for the control of the generated sound in direct terms of physiological parameters.  The vocal fold model can simulate right/left tissue asymmetries, and the simulator also includes models of the trachea and bronchi, nasal tract and paranasal sinuses, muscle jitter, neurological and physiological tremor, and aspiration noise. Further, it has an articulatory model for the vocal tract which controls its shape by configuration parameters of the jaw, tongue, lips and larynx.    
 
-<p><i class="fa fa-download"></i><a href="https://www.mediafire.com/file/87ndqzkz2tz8ws3/SimuVox.zip/file"> <b>Download</b></a>, version 0.1.1, July 2017.</p> 
+<p><i class="fa fa-download"></i> <a href="https://www.mediafire.com/file/87ndqzkz2tz8ws3/SimuVox.zip/file"><b>Download</b></a>, version 0.1.1, July 2017.</p> 
 
 <p class="mb-0"><i class="fa fa-volume-up"></i> Audio:</p>
 <ul>
-<li><a href="/disorder/"><b>Voice disorders</b></a></li>
-<li><a href="/french/"><b>French vowels</b></a></li>
+<li><a href="/disorder/">Voice disorders</a></li>
+<li><a href="/french/">French vowels</a></li>
 </ul>
 
 <div class="row mt-3 mx-auto" style="max-width:750px">
