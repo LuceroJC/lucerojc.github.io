@@ -1,6 +1,6 @@
 ---
 layout: page
-title: The wicked Bible (1631)
+title: The Wicked Bible (1631)
 #description: a project with a background image
 img: assets/img/kjv1631.png
 importance: 40
