@@ -22,14 +22,14 @@ order: 5
   {% if page.horizontal -%}
   <div class="container">
     <div class="row row-cols-2">
-    {%- for project in sorted_projects -%}
+    {%- for project in sorted_projects reversed -%}
       {% include projects_horizontal.html %}
     {%- endfor %}
     </div>
   </div>
   {%- else -%}
   <div class="grid">
-    {%- for project in sorted_projects -%}
+    {%- for project in sorted_projects reversed -%}
       {% include projects.html %}
     {%- endfor %}
   </div>
@@ -43,14 +43,14 @@ order: 5
   {% if page.horizontal -%}
   <div class="container">
     <div class="row row-cols-2">
-    {%- for project in sorted_projects -%}
+    {%- for project in sorted_projects reversed -%}
       {% include projects_horizontal.html %}
     {%- endfor %}
     </div>
   </div>
   {%- else -%}
   <div class="grid">
-    {%- for project in sorted_projects -%}
+    {%- for project in sorted_projects reversed -%}
       {% include projects.html %}
     {%- endfor %}
   </div>
