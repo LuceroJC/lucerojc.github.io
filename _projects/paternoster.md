@@ -2,14 +2,14 @@
 layout: page
 title: Pater Noster
 #description: a project with a background image
-img: assets/img/paternoster.png
+img: assets/img/paterNoster.png
 importance: 50
 category: Other
 --- 
 
 <div class="row">
     <div class="col-sm mt-3 mt-md-0 img-medium mx-auto">
-        {% include figure.html path="assets/img/paternoster.png" title="" class="img-fluid rounded z-depth-1" %}
+        {% include figure.html path="assets/img/paterNoster.png" title="" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 
