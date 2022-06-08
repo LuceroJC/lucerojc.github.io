@@ -13,4 +13,4 @@ category: Other
     </div>
 </div>
 
-This is my TeX rendition of the traditional Gregorian chant score of the Pater Noster (Lord's Prayer). The melody is very old, and I took it from [GregoBase](https://gregobase.selapa.net/). I also used a medieval blackletter typeface with a Lombardi initial.   
+This is my TeX rendition of the traditional Gregorian chant score of the Pater Noster (Lord's Prayer). The melody is very old, and I took it from [GregoBase](https://gregobase.selapa.net/). I also used a medieval blackletter typeface with a Lombardi initial.    
