@@ -3,7 +3,7 @@ layout: page
 title: Scriptorium
 permalink: /scriptorium/
 comment: Reconstruction of old printed documents using TeX. Just for fun.
-nav: true
+nav: false
 display_categories: [Bible, work, fun]
 horizontal: false
 order: 5
