@@ -42,7 +42,9 @@ tool for training of clinicians, clinical diagnosis and treatment.</p>
 
 ### Support
 
-<p>This project was supporte by a CNPq-FRS/FNRS (Brazil - Belgium) cooperation program with Jean Schoentgen at Université Libre de Bruxelles (2012 – 2014), and by a CNPq grant (2015 - 2018) with the collaboration of Mara Behlau and her team at the Center of Voice Studies of São Paulo. Conference presentations using results from SimuVox won prizes of the Brazilian Society of Speech-Language Pathology and Audiology (2013, 2015, 2016, 2020) and the Brazilian Chapter of The Voice Foundation (2017, 2021).</p>
+<p>This project was supporte by a CNPq-FRS/FNRS (Brazil - Belgium) cooperation program with Jean Schoentgen at Université Libre de Bruxelles (2012 – 2014), and by a CNPq grant (2015 - 2018) with the collaboration of Mara Behlau and her team at the Center of Voice Studies of São Paulo. 
+
+Conference presentations using results from SimuVox won prizes of the Brazilian Society of Speech-Language Pathology and Audiology (2013, 2015, 2016, 2020) and the Brazilian Chapter of The Voice Foundation (2017, 2021).</p>
 
 
 
