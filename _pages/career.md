@@ -18,6 +18,7 @@ order: 2
 - Visiting Researcher at Laboratory of Geophysical and Industrial Flows (LEGI), Grenoble Alpes University (UGA, France): 
     - Sep - Oct 2022: LabEx Tec 21 Program (UGA). 
     - Jun - Aug 2019 and Nov 2019 - Jan 2020: "Campagne chercheurs invités 2019" (UGA).
+- Visiting Researcher at Faculty of Applied Sciences, Université Libre de Bruxelles (Belgium), CNPq/F.R.S.-FNRS Scientific Cooperation Program, Sep 2012 and Dec 2013 - Jan 2014.
 - "Poste Rouge" Visiting Researcher at GIPSA-Lab (Grenoble, France), Sep 2010 - Mar 2011.
 - Faculty member of the Dept. Mathematics, University of Brasília, 1997-2011. Last rank: Associate Professor.
 - Postdoctoral Fellow at both Dept. Psychology, Queen's University (Canada), and Dept. Computer Science, University of Toronto, 1996-1997.
