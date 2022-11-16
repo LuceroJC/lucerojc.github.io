@@ -858,12 +858,10 @@
   }
 
 @Article{Titze2022,
-  author  = {IR Titze and JC Lucero},
+  author  = {Titze, Ingo R. and Lucero, Jorge C.},
   journal = {Applied Sciences},
   title   = {Voice Simulation: The Next Generation},
   year    = {2022},
-  pages   = {accepted},
-  selected = true,
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}

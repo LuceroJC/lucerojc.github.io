@@ -19,10 +19,12 @@
 
           <!-- Journal/Book title and date -->
           {% if entry.type == "article" -%}
-            {% if entry.pages != "in press" -%}
-              {%- capture periodical -%}<em>{{entry.journal}}</em> {{entry.volume}}, {{entry.pages}}, {{entry.year}} {%- endcapture -%}
-            {% else %}
+            {% if entry.pages == "in press" -%}
               {%- capture periodical -%}<em>{{entry.journal}}</em>, in press {%- endcapture -%}
+            {% elsif entry.pages == "accepted" -%}
+              {%- capture periodical -%}<em>{{entry.journal}}</em>, accepted for publication {%- endcapture -%}
+            {% else %}
+              {%- capture periodical -%}<em>{{entry.journal}}</em> {{entry.volume}}, {{entry.pages}}, {{entry.year}} {%- endcapture -%}
             {% endif %}
           {%- elsif entry.type == "inproceedings" -%}
             {%- capture periodical -%}In: {{entry.editor}}, <em> {{entry.booktitle}}</em>, {{entry.publisher}}, {{entry.pages}}, {{entry.year}}{%- endcapture -%}
