@@ -2,7 +2,7 @@
 <html lang="en">
 
   <!-- Head -->
-  <head><meta http-equiv="refresh" content="3; url=https://lucerojc.github.io/" />    <!-- Metadata, OpenGraph and Schema.org -->
+  <head>    <!-- Metadata, OpenGraph and Schema.org -->
     
 
     <!-- Standard metadata -->
@@ -10,9 +10,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name='ir-site-verification-token' value='-1485589708'>
-    <title>Jorge C. Lucero | Page not found</title>
+    <title>Jorge C. Lucero | SimuVox</title>
     <meta name="author" content="Jorge C. Lucero" />
-    <meta name="description" content="Looks like there has been a mistake. Nothing exists here." />
+    <meta name="description" content="A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design.
+" />
 
 
     <!-- Bootstrap & MDB -->
@@ -32,7 +33,7 @@
     <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⭐</text></svg>">
     
     <link rel="stylesheet" href="/assets/css/main.css">
-    <link rel="canonical" href="https://lucerojc.github.io/404.html">
+    <link rel="canonical" href="https://lucerojc.github.io/simuvox/">
     
     <!-- Dark Mode -->
     
@@ -73,8 +74,8 @@
               <li class="nav-item ">
                 <a class="nav-link" href="/publications/">Publications</a>
               </li>
-              <li class="nav-item ">
-                <a class="nav-link" href="/simuvox/">SimuVox</a>
+              <li class="nav-item active">
+                <a class="nav-link" href="/simuvox/">SimuVox<span class="sr-only">(current)</span></a>
               </li>
             </ul>
           </div>
@@ -88,12 +89,62 @@
         <div class="post">
 
           <header class="post-header">
-            <h1 class="post-title">Page not found</h1>
-            <p class="desc"></p>
+            <h1 class="post-title">SimuVox</h1>
+            <p class="desc">Computer simulation of disordered voices</p>
           </header>
 
           <article>
-            <p>You will be redirected to the main page within 3 seconds. If not redirected, please click <a href="https://lucerojc.github.io/">here</a>.</p>
+            <p>This project focuses on the clinical assessment of voice disorders. Abnormal voices with irregular pitch, loudness, or timbre often stem from laryngeal pathologies or physiological dysfunctions. To address this, I developed SimuVox, a physics-based speech synthesizer capable of simulating normal and disordered voice timbres.</p>
+
+<p>SimuVox models the vocal fold vibration, glottal aerodynamics, and acoustic wave propagation in the vocal tract. This allows direct control of the simulated sound through physiological parameters. The vocal fold model can introduce asymmetric left/right tissue properties. The simulator also incorporates models of the trachea, bronchi, nasal tract, paranasal sinuses, muscle jitter, neurological/physiological tremor, and aspiration noise. An articulatory model shapes the vocal tract using configurable parameters for the jaw, tongue, lips, and larynx.</p>
+
+<p><i class="fa fa-download"></i> <a href="https://www.mediafire.com/file/87ndqzkz2tz8ws3/SimuVox.zip/file" target="_blank" rel="noopener noreferrer"><b>Download</b></a>, version 0.1.1, July 2017.</p>
+
+<p class="mb-0"><i class="fa fa-volume-up"></i> Audio:</p>
+<ul>
+<li><a href="/disorder/">Voice disorders</a></li>
+<li><a href="/french/">French vowels</a></li>
+</ul>
+
+<div class="row mt-3 mx-auto" style="max-width:750px">
+    <div class="col-sm mt-3 mt-md-0">
+        <figure>
+
+  <picture>
+    <source media="(max-width: 480px)" srcset="/assets/img/simuvox-480.webp"></source>
+    <source media="(max-width: 800px)" srcset="/assets/img/simuvox-800.webp"></source>
+    <source media="(max-width: 1400px)" srcset="/assets/img/simuvox-1400.webp"></source>
+    <!-- Fallback to the original file -->
+    <img class="img-fluid img-bg rounded" src="/assets/img/simuvox.png">
+
+  </picture>
+
+</figure>
+
+    </div>
+</div>
+<div class="caption">
+     User interface of SimuVox. 
+</div>
+
+<p>Potential applications of SimuVox include:</p>
+
+<ul>
+  <li>Investigating signal properties and laryngeal conditions causing abnormal voice quality</li>
+  <li>Providing controllable synthetic stimuli for perceptual assessments</li>
+  <li>Computational training tool for clinicians</li>
+  <li>Assisting clinical diagnosis and treatment</li>
+</ul>
+
+<p>The main mathematical models are described in:  Lucero, Schoentgen &amp; M Behlau, "Physics-based synthesis of disordered voices", <i>Interspeech 2013 </i> (Lyon, France, 2013) 
+[<a href="/assets/pdf/10.1.1.727.1140.pdf">PDF</a>].</p>
+
+<h3 id="support">Support</h3>
+
+<p>This project was supported by a CNPq-FRS/FNRS Brazil-Belgium cooperation program with Jean Schoentgen at Université Libre de Bruxelles (2012-2014), and a CNPq grant (2015-2018) in collaboration with Mara Behlau’s team at the Center of Voice Studies of São Paulo.</p>
+
+<p>SimuVox research has won awards from the Brazilian Society of Speech-Language Pathology and Audiology (2013, 2015, 2016, 2020) and the Brazilian Chapter of The Voice Foundation (2017, 2021).</p>
+
 
           </article>
 
