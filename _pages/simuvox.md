@@ -12,7 +12,7 @@ This project focuses on the clinical assessment of voice disorders. Abnormal voi
 
 SimuVox models the vocal fold vibration, glottal aerodynamics, and acoustic wave propagation in the vocal tract. This allows direct control of the simulated sound through physiological parameters. The vocal fold model can introduce asymmetric left/right tissue properties. The simulator also incorporates models of the trachea, bronchi, nasal tract, paranasal sinuses, muscle jitter, neurological/physiological tremor, and aspiration noise. An articulatory model shapes the vocal tract using configurable parameters for the jaw, tongue, lips, and larynx.    
 
-<p><i class="fa fa-download"></i> <a href="https://www.mediafire.com/file/87ndqzkz2tz8ws3/SimuVox.zip/file"><b>Download</b></a>, version 0.1.1, July 2017.</p> 
+<p><i class="fa fa-download"></i> <a href="https://www.mediafire.com/file/87ndqzkz2tz8ws3/SimuVox.zip/file"><b>Download</b></a>, version 0.1.2, July 2023.</p> 
 
 <p class="mb-0"><i class="fa fa-volume-up"></i> Audio:</p>
 <ul>
