@@ -10,10 +10,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name='ir-site-verification-token' value='-1485589708'>
-    <title>Jorge C. Lucero | SimuVox</title>
+    <title>SimuVox - Free Voice Synthesis Software for Clinical Voice Assessment | Jorge C. Lucero</title>
     <meta name="author" content="Jorge C. Lucero" />
-    <meta name="description" content="A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design.
-" />
+    <meta name="description" content="SimuVox - Free physics-based voice synthesis software for simulating normal and disordered voice timbres. Developed by Dr. Jorge Lucero for clinical voice assessment and research." />
 
 
     <!-- Bootstrap & MDB -->
@@ -37,6 +36,37 @@
     
     <!-- Dark Mode -->
     
+<!-- OpenGraph -->
+<meta property="og:title" content="Jorge C. Lucero | Voice & Speech Production Research" />
+<meta property="og:description" content="Professor specializing in voice production research, creator of SimuVox and PhonaLab" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://lucerojc.github.io/" />
+<meta property="og:image" content="https://lucerojc.github.io/assets/img/prof_pic.jpg" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Jorge C. Lucero | Voice & Speech Production Research" />
+<meta name="twitter:description" content="Professor specializing in voice production research, creator of SimuVox and PhonaLab" />
+<meta name="twitter:image" content="https://lucerojc.github.io/assets/img/prof_pic.jpg" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SimuVox",
+  "description": "Physics-based speech synthesizer for simulating normal and disordered voice timbres",
+  "applicationCategory": "ScientificApplication",
+  "operatingSystem": "Windows",
+  "author": {
+    "@type": "Person",
+    "name": "Jorge C. Lucero"
+  },
+  "url": "https://lucerojc.github.io/simuvox/",
+  "downloadUrl": "https://www.mediafire.com/file/87ndqzkz2tz8ws3/SimuVox.zip/file",
+  "softwareVersion": "0.1.2",
+  "datePublished": "2023-07"
+}
+</script>
 
   </head>
 
@@ -74,6 +104,9 @@
               <li class="nav-item ">
                 <a class="nav-link" href="/publications/">Publications</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="https://phonalab.com" target="_blank" rel="noopener noreferrer">Phonalab</a>
+              </li>
               <li class="nav-item active">
                 <a class="nav-link" href="/simuvox/">SimuVox<span class="sr-only">(current)</span></a>
               </li>
@@ -90,14 +123,24 @@
 
           <header class="post-header">
             <h1 class="post-title">SimuVox</h1>
-            <p class="desc">Computer simulation of disordered voices</p>
+            <p class="desc">Free physics-based software for simulating normal and disordered voice quality</p>
           </header>
 
           <article>
-            <p>This project focuses on the clinical assessment of voice disorders. Abnormal voices with irregular pitch, loudness, or timbre often stem from laryngeal pathologies or physiological dysfunctions. To address this, I developed SimuVox, a physics-based speech synthesizer capable of simulating normal and disordered voice timbres.</p>
+            <h2>Overview</h2>
+          <p>SimuVox is a physics-based speech synthesis software designed for clinical assessment of voice disorders. This free tool enables clinicians, researchers, and educators to simulate and study abnormal voices with irregular pitch, loudness, or timbre that often stem from laryngeal pathologies or physiological dysfunctions.</p>
 
-<p>SimuVox models the vocal fold vibration, glottal aerodynamics, and acoustic wave propagation in the vocal tract. This allows direct control of the simulated sound through physiological parameters. The vocal fold model can introduce asymmetric left/right tissue properties. The simulator also incorporates models of the trachea, bronchi, nasal tract, paranasal sinuses, muscle jitter, neurological/physiological tremor, and aspiration noise. An articulatory model shapes the vocal tract using configurable parameters for the jaw, tongue, lips, and larynx.</p>
+          <p>Unlike traditional voice synthesis methods, SimuVox uses biomechanical and aerodynamic models to create realistic voice simulations, allowing direct control through physiological parameters rather than abstract signal processing parameters.</p>
 
+          <h2>Key Features</h2>
+          <ul>
+            <li><strong>Vocal Fold Modeling:</strong> low-dimensional model with support for asymmetric left/right tissue properties</li>
+            <li><strong>Glottal Aerodynamics:</strong> Simulation of airflow through the glottis based on fluid dynamics principles</li>
+            <li><strong>Acoustic Wave Propagation:</strong> Models sound transmission through the vocal tract, trachea, bronchi, nasal tract, and paranasal sinuses</li>
+            <li><strong>Disorder Simulation:</strong> Capability to simulate various voice pathologies including muscle jitter, tremor, and aspiration noise</li>
+            <li><strong>Articulatory Control:</strong> Configurable parameters for jaw, tongue, lips, and larynx position</li>
+            <li><strong>Physiological Parameters:</strong> Direct control through clinically meaningful parameters</li>
+          </ul>
 <p><i class="fa fa-download"></i> <a href="https://www.mediafire.com/file/87ndqzkz2tz8ws3/SimuVox.zip/file" target="_blank" rel="noopener noreferrer"><b>Download</b></a>, version 0.1.2, July 2023.</p>
 
 <p class="mb-0"><i class="fa fa-volume-up"></i> Audio:</p>
@@ -115,7 +158,7 @@
     <source media="(max-width: 800px)" srcset="/assets/img/simuvox-800.webp"></source>
     <source media="(max-width: 1400px)" srcset="/assets/img/simuvox-1400.webp"></source>
     <!-- Fallback to the original file -->
-    <img class="img-fluid img-bg rounded" src="/assets/img/simuvox.png">
+    <img class="img-fluid img-bg rounded" src="/assets/img/simuvox.png" alt="SimuVox user interface showing vocal fold parameters, waveforms, and spectral analysis" loading="lazy">
 
   </picture>
 
@@ -127,23 +170,42 @@
      User interface of SimuVox. 
 </div>
 
-<p>Potential applications of SimuVox include:</p>
+<h2>Clinical Applications</h2>
+          <p>SimuVox has multiple applications in clinical voice assessment and research:</p>
 
-<ul>
-  <li>Investigating signal properties and laryngeal conditions causing abnormal voice quality</li>
-  <li>Providing controllable synthetic stimuli for perceptual assessments</li>
-  <li>Computational training tool for clinicians</li>
-  <li>Assisting clinical diagnosis and treatment</li>
-</ul>
+          <ul>
+            <li><strong>Research Tool:</strong> Investigating relationships between signal properties and laryngeal conditions causing abnormal voice quality</li>
+            <li><strong>Perceptual Assessment:</strong> Providing controllable synthetic voice stimuli for training and calibrating perceptual evaluations</li>
+            <li><strong>Clinical Training:</strong> Computational training tool for speech-language pathologists and voice specialists</li>
+            <li><strong>Diagnostic Support:</strong> Assisting in clinical diagnosis by modeling hypothetical pathological conditions</li>
+            <li><strong>Treatment Planning:</strong> Predicting voice outcomes for various therapeutic interventions</li>
+            <li><strong>Education:</strong> Teaching voice physiology and pathophysiology to students</li>
+          </ul>
 
-<p>The main mathematical models are described in:  Lucero, Schoentgen &amp; M Behlau, "Physics-based synthesis of disordered voices", <i>Interspeech 2013 </i> (Lyon, France, 2013) 
-[<a href="/assets/pdf/10.1.1.727.1140.pdf">PDF</a>].</p>
+          <h2>Technical Details</h2>
+          <p>The main mathematical models and implementation details are described in:</p>
+          <p>Lucero, Schoentgen & M Behlau, "Physics-based synthesis of disordered voices", <em>Interspeech 2013</em> (Lyon, France, 2013) [<a href="/assets/pdf/10.1.1.727.1140.pdf">PDF</a>].</p>
 
-<h3 id="support">Support</h3>
+<h2>Awards and Recognition</h2>
+          <p>SimuVox research has been recognized with awards from:</p>
+          <ul>
+            <li>Brazilian Society of Speech-Language Pathology and Audiology (2013, 2015, 2016, 2020)</li>
+            <li>Brazilian Chapter of The Voice Foundation (2017, 2021)</li>
+          </ul>
 
-<p>This project was supported by a CNPq-FRS/FNRS Brazil-Belgium cooperation program with Jean Schoentgen at Université Libre de Bruxelles (2012-2014), and a CNPq grant (2015-2018) in collaboration with Mara Behlau’s team at the Center of Voice Studies of São Paulo.</p>
+          <h2>Support and Funding</h2>
+          <p>This project was supported by:</p>
+          <ul>
+            <li>CNPq-FRS/FNRS Brazil-Belgium cooperation program with Jean Schoentgen at Université Libre de Bruxelles (2012-2014)</li>
+            <li>CNPq grant (2015-2018) in collaboration with Mara Behlau's team at the Center of Voice Studies of São Paulo</li>
+          </ul>
 
-<p>SimuVox research has won awards from the Brazilian Society of Speech-Language Pathology and Audiology (2013, 2015, 2016, 2020) and the Brazilian Chapter of The Voice Foundation (2017, 2021).</p>
+          <h2>Related Projects</h2>
+          <p>For web-based voice analysis (rather than synthesis), see <a href="https://phonalab.com" target="_blank" rel="noopener noreferrer">PhonaLab</a> - a free online tool for acoustic voice analysis with AI-powered clinical interpretation.</p>
+
+          <h2>Citation</h2>
+          <p>If you use SimuVox in your research, please cite:</p>
+          <p class="citation">Lucero, J.C., Schoentgen, J., & Behlau, M. (2013). Physics-based synthesis of disordered voices. In <em>Proceedings of Interspeech 2013</em>, Lyon, France.</p>
 
 
           </article>
@@ -186,4 +248,6 @@ Last updated: November 05, 2023.
   </script>
   </div></footer></body>
 </html>
+
+
 
