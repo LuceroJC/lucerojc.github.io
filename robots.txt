@@ -1,4 +1,18 @@
-User-agent: *
-Disallow:
+# robots.txt for https://lucerojc.github.io
 
+User-agent: *
+Allow: /
+
+# Disallow access to assets that don't need indexing
+Disallow: /assets/js/
+Disallow: /assets/css/
+
+# Allow important content
+Allow: /assets/pdf/
+Allow: /assets/img/
+
+# Sitemap location
 Sitemap: https://lucerojc.github.io/sitemap.xml
+
+# Crawl-delay (optional, be nice to servers)
+Crawl-delay: 1
