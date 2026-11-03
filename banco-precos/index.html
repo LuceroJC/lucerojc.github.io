@@ -326,8 +326,21 @@ function tipFor(box) {
 const svgIn = (box, W, H) => d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`)
   .style('display', 'block').style('font-family', 'var(--sans)').style('font-size', '12px');
 
+// ---------- Direct links: ?tipo=<slug> opens the page at that type ----------
+const slug = (t) => t.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+function tipoDaUrl() {
+  const q = new URLSearchParams(location.search).get('tipo') || new URLSearchParams(location.hash.slice(1)).get('tipo');
+  if (!q) return null;
+  const k = slug(q);
+  const ts = DATA.tipos.map((x) => x.t);
+  return ts.find((t) => slug(t) === k) || ts.find((t) => slug(t).startsWith(k)) || ts.find((t) => slug(t).includes(k)) || null;
+}
+function gravarUrl(t) {
+  try { const u = new URL(location.href); u.searchParams.set('tipo', slug(t)); u.hash = ''; history.replaceState(null, '', u); } catch (e) { /* file:// or old browser */ }
+}
+
 function escolher(t, scroll) {
-  atual = t; drawAll();
+  atual = t; gravarUrl(t); drawAll();
   if (scroll) document.getElementById('detalhe').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -618,7 +631,10 @@ function drawAll() {
   rows.forEach((r) => { r.ref = bandMed.get(r.sp) ?? r.med; r.byspec = bandMed.has(r.sp); r.vr = 100 * (r.p / r.ref - 1); });
   drawFaixas(); drawRef(); drawSel(); drawKpis(rows, tipo); drawEspec(rows); drawVenc(rows); drawRisk(rows, tipo); drawPontos(rows); drawCompras(rows);
 }
+const tipoInicial = tipoDaUrl();
+if (tipoInicial) atual = tipoInicial;
 drawAll();
+if (tipoInicial) requestAnimationFrame(() => document.getElementById('detalhe').scrollIntoView({ block: 'start' }));
 let lastW = document.documentElement.clientWidth, rt;
 new ResizeObserver(() => {
   const w = document.documentElement.clientWidth; if (w === lastW) return; lastW = w;
