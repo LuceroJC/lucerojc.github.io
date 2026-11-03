@@ -188,6 +188,11 @@ p {
   line-height: 1.45;
 }
 
+.section-intro {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
 /* Project cards */
 .projects {
   display: grid;
