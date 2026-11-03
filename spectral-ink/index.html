@@ -242,9 +242,10 @@ input[type=text],select{background:#120d17;border:1px solid var(--line);border-r
             <button class="btn" type="button" id="stopBtn">■ Stop</button>
             <span class="sep"></span>
             <button class="btn primary" type="button" id="saveWav">Save song with picture (WAV)</button>
+            <button class="btn" type="button" id="saveMp3" disabled>Save MP3</button>
             <button class="btn" type="button" id="savePng">Save spectrogram (PNG)</button>
           </div>
-          <p class="hint" id="saveHint">Share the WAV or a high-bitrate MP3. Anyone can see the picture in a spectrogram viewer, such as the Reveal tab or Audacity.</p>
+          <p class="hint" id="saveHint">The MP3 is the file made by the codec test, at the bitrate chosen there; save it once the test shows the picture survives. Anyone can see the picture in a spectrogram viewer, such as the Reveal tab or Audacity.</p>
         </div>
 
         <div class="notes">
@@ -450,9 +451,9 @@ async function saveFile(filename, blob) {
   try { dl = await window.claude.use("downloads"); } catch (e) { dl = null; }
   if (!dl) { toast("Saving files isn't available in this view. Open the tool on its own page to save."); return; }
   let data = blob, name = filename;
-  if (/\.wav$/i.test(filename)) {             // this viewer does not accept .wav, so wrap it in a .zip
+  if (/\.(wav|mp3)$/i.test(filename)) {       // this viewer accepts neither .wav nor .mp3, so wrap them in a .zip
     data = zipStore(filename, new Uint8Array(await blob.arrayBuffer()));
-    name = filename.replace(/\.wav$/i, ".zip");
+    name = filename.replace(/\.(wav|mp3)$/i, ".zip");
   }
   try { await dl.save({ filename: name, data }); }
   catch (e) {
@@ -475,11 +476,9 @@ function drawPictureTo(ctx, w, h) {
     ctx.drawImage(pic.bitmap, 0, 0, w, h);
   } else {
     const txt = ($("picText").value || " ").toUpperCase();
-    ctx.fillStyle = inv ? "#000" : "#fff"; ctx.strokeStyle = ctx.fillStyle;
-    const lw = Math.max(2, Math.round(h * 0.035));
-    ctx.lineWidth = lw; ctx.strokeRect(lw * 0.8, lw * 0.8, w - lw * 1.6, h - lw * 1.6);
-    let fs = h * 0.5; ctx.font = `700 ${fs}px "IBM Plex Sans", Arial, sans-serif`;
-    const maxW = w * 0.86, mw = ctx.measureText(txt).width;
+    ctx.fillStyle = inv ? "#000" : "#fff";
+    let fs = h * 0.62; ctx.font = `700 ${fs}px "IBM Plex Sans", Arial, sans-serif`;
+    const maxW = w * 0.92, mw = ctx.measureText(txt).width;
     if (mw > maxW) { fs *= maxW / mw; ctx.font = `700 ${fs}px "IBM Plex Sans", Arial, sans-serif`; }
     ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(txt, w / 2, h / 2 + fs * 0.04);
   }
@@ -640,7 +639,7 @@ async function run() {
   if (pk > 0.999) { const g = 0.999 / pk; for (let i = 0; i < n; i++) { L[i] *= g; R[i] *= g; y[i] *= g; } }
   const mono = new Float32Array(n); for (let i = 0; i < n; i++) mono[i] = 0.5 * (L[i] + R[i]);
   S.emb = { L, R, y, mono, p, syn: { M: syn.M, W: syn.W, nF: syn.nF, rows: syn.rows }, k0, k1 };
-  S.mp3 = null;
+  S.mp3 = null; S.mp3Blob = null; updateMp3Button();
 
   // tiles: hearing + level
   const hiNote = p.hi > 14500 ? " Above 14 kHz the formula is optimistic for young ears; check with headphones." : "";
@@ -688,6 +687,11 @@ function shift(d, lag, n) {
   for (let i = 0; i < n; i++) { const j = i + lag; out[i] = j >= 0 && j < d.length ? d[j] : 0; }
   return out;
 }
+function updateMp3Button() {
+  const b = $("saveMp3");
+  b.disabled = !S.mp3Blob;
+  b.textContent = S.mp3Blob ? `Save MP3 (${S.mp3Kbps} kbps)` : "Save MP3";
+}
 async function mp3Test(id) {
   const e = S.emb, kbps = e.p.kbps;
   $("mp3K").textContent = `After MP3 ${kbps} kbps`;
@@ -696,6 +700,7 @@ async function mp3Test(id) {
   try {
     const blob = await encodeMp3(e.L, e.R, kbps, (f) => setStatus(`Encoding MP3 at ${kbps} kbps… ${Math.round(f * 100)}%`), id);
     if (!blob || id !== S.run) return;
+    S.mp3Blob = blob; S.mp3Kbps = kbps; updateMp3Button();
     setStatus("Decoding MP3…");
     const ab = await decodeFile(blob, 2);
     if (id !== S.run) return;
@@ -883,10 +888,14 @@ $("songFile").addEventListener("change", async (ev) => {
   } catch (e) { setStatus("That file could not be decoded. Try WAV, MP3, FLAC or OGG, at least 2 seconds long.", true); }
   ev.target.value = "";
 });
+function baseName() { return (S.name || "song").replace(/\.[^.]+$/, "").replace(/[^\w\- ]+/g, "").trim() || "song"; }
 $("saveWav").addEventListener("click", () => {
   if (!S.emb) return;
-  const base = (S.name || "song").replace(/\.[^.]+$/, "").replace(/[^\w\- ]+/g, "").trim() || "song";
-  saveFile(`${base}-with-picture.wav`, new Blob([wavBytes(S.emb.L, S.emb.R)], { type: "audio/wav" }));
+  saveFile(`${baseName()}-with-picture.wav`, new Blob([wavBytes(S.emb.L, S.emb.R)], { type: "audio/wav" }));
+});
+$("saveMp3").addEventListener("click", () => {
+  if (!S.mp3Blob) return;
+  saveFile(`${baseName()}-with-picture-${S.mp3Kbps}kbps.mp3`, S.mp3Blob);
 });
 $("savePng").addEventListener("click", () => {
   $("specWav").toBlob((b) => b && saveFile("spectrogram.png", b), "image/png");
