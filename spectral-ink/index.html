@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Free online tool: hide a picture inside a song, just below what ears can hear, where a spectrogram reveals it. Checks audibility and MP3 survival. Runs in your browser; audio is never uploaded.">
+<meta property="og:title" content="Spectral Ink — hide a picture inside a song">
+<meta property="og:description" content="Free tool: hide a picture in a song's spectrogram, below the threshold of hearing, and test whether it survives MP3. Runs in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://lucerojc.github.io/spectral-ink/">
+<link rel="canonical" href="https://lucerojc.github.io/spectral-ink/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M0 0h8v8H0z' fill='%23130f18'/%3E%3Cpath d='M1 5h1v2H1zM3 3h1v4H3zM5 4h1v3H5z' fill='%23b73779'/%3E%3Cpath d='M1 1h6v1H1z' fill='%23f58a5c'/%3E%3C/svg%3E">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YW8VKF9R66"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-YW8VKF9R66");</script>
+<title>Spectral Ink — hide a picture inside a song</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* layout: controls rail on the left, instrument readouts and spectrograms on the right; stacks to one column under 900px.
+   single dark theme by choice: the page lives in the spectrogram's own colour world (magma on ink). */
+:root{
+  --bg:#130f18;
+  --panel:#1c1623;
+  --line:#2f2739;
+  --ink:#efe9f3;
+  --muted:#a698b1;
+  --accent:#f58a5c;
+  --accent-2:#fcd38a;
+  --cyan:#6fd6e6;
+  --good:#62d2a2;
+  --warn:#f2c14e;
+  --bad:#ff7070;
+  --display:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --r:10px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+a{color:var(--accent-2)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+
+.wrap{max-width:1280px;margin:0 auto;padding:22px max(16px,3vw) 48px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:18px}
+h1{font-family:var(--display);font-weight:700;font-size:34px;line-height:1.05;margin:0;letter-spacing:-.01em}
+h1 span{color:var(--accent)}
+.lede{margin:6px 0 0;color:var(--muted);max-width:62ch;text-wrap:balance}
+.tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px}
+.tabs button{border:0;background:transparent;padding:6px 16px;border-radius:999px;cursor:pointer;color:var(--muted);font-weight:500}
+.tabs button[aria-selected="true"]{background:var(--accent);color:#1a0f0a}
+
+.grid{display:grid;grid-template-columns:330px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+
+.rail{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.card h2{font-family:var(--display);font-size:15px;font-weight:600;margin:0 0 10px;display:flex;align-items:baseline;gap:8px}
+.card h2 .n{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:500}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid var(--line);background:#251d2e;border-radius:8px;padding:6px 11px;cursor:pointer;font-size:14px;line-height:1.3}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#1a0f0a;font-weight:600}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.small{font-size:13px;padding:4px 9px}
+.file{position:relative;overflow:hidden}
+.file input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.meta{font-size:13px;color:var(--muted);font-family:var(--mono);margin-top:8px;overflow-wrap:anywhere}
+label{font-size:13px;color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:4px;margin-top:10px}
+.field .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.field output{font-family:var(--mono);font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=text],select{background:#120d17;border:1px solid var(--line);border-radius:8px;padding:6px 9px;width:100%}
+.check{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:13px;color:var(--ink)}
+.check input{margin-top:3px;accent-color:var(--accent)}
+.hint{font-size:12.5px;color:var(--muted);margin:4px 0 0}
+#picPreview{width:100%;height:auto;display:block;border-radius:6px;border:1px solid var(--line);margin-top:10px;background:#000;aspect-ratio:3/1}
+.presets{display:grid;grid-template-columns:1fr;gap:6px}
+.presets .btn{text-align:left;display:flex;justify-content:space-between;gap:8px}
+.presets .btn small{color:var(--muted);font-family:var(--mono);font-size:12px}
+
+.main{display:flex;flex-direction:column;gap:14px;min-width:0}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.tiles{grid-template-columns:minmax(0,1fr)}}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;border-left:4px solid var(--line)}
+.tile[data-state="good"]{border-left-color:var(--good)}
+.tile[data-state="warn"]{border-left-color:var(--warn)}
+.tile[data-state="bad"]{border-left-color:var(--bad)}
+.tile .k{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.tile .v{font-family:var(--display);font-size:24px;font-weight:600;line-height:1.15;margin-top:4px;font-variant-numeric:tabular-nums}
+.tile .d{font-size:13px;color:var(--muted);margin-top:4px}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;margin-left:6px;vertical-align:middle;font-family:var(--body)}
+.pill.good{background:color-mix(in srgb,var(--good) 22%,transparent);color:var(--good)}
+.pill.warn{background:color-mix(in srgb,var(--warn) 22%,transparent);color:var(--warn)}
+.pill.bad{background:color-mix(in srgb,var(--bad) 22%,transparent);color:var(--bad)}
+
+.status{font-family:var(--mono);font-size:13px;color:var(--muted);min-height:20px}
+.status.err{color:var(--bad)}
+.specCard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 12px 8px}
+.specHead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.specHead h3{margin:0;font-size:14px;font-weight:600}
+.specHead h3 small{color:var(--muted);font-weight:400}
+.spec{width:100%;height:230px;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:4px}
+.sw{display:inline-block;width:18px;height:0;border-top:3px solid var(--accent-2);vertical-align:middle;margin-right:5px}
+.sw.c{border-top:2px solid var(--cyan)}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:4px 10px;cursor:pointer;color:var(--muted);font-size:13px}
+.seg button[aria-pressed="true"]{background:#2b2234;color:var(--ink)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.actions .sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:6px}
+.notes .card p{margin:0;font-size:13.5px;color:var(--muted)}
+.notes .card h2{font-size:14px}
+[hidden]{display:none !important}
+.foot{margin-top:28px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#2b2234;border:1px solid var(--line);padding:8px 14px;border-radius:8px;font-size:14px;max-width:min(560px,90vw)}
+@media (prefers-reduced-motion:no-preference){.btn{transition:border-color .15s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Spectral <span>Ink</span></h1>
+      <p class="lede">Hide a picture inside a song, just below what ears can hear. Check how audible it is, and whether it survives MP3. Everything runs in your browser; no audio is uploaded.</p>
+    </div>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tabHide" aria-selected="true" aria-controls="viewHide">Hide a picture</button>
+      <button role="tab" id="tabReveal" aria-selected="false" aria-controls="viewReveal">Reveal</button>
+    </div>
+  </header>
+
+  <!-- ============================== HIDE ============================== -->
+  <section id="viewHide" role="tabpanel" aria-labelledby="tabHide">
+    <div class="grid">
+      <div class="rail">
+        <div class="card">
+          <h2><span class="n">1</span>Song</h2>
+          <div class="row">
+            <button class="btn" id="demoBtn" type="button">Use demo song</button>
+            <span class="btn file">Choose audio file…<input type="file" id="songFile" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a" aria-label="Choose audio file"></span>
+          </div>
+          <div class="meta" id="songMeta">—</div>
+        </div>
+
+        <div class="card">
+          <h2><span class="n">2</span>Picture</h2>
+          <div class="field" style="margin-top:0">
+            <label for="picText">Text to draw</label>
+            <input type="text" id="picText" value="HIDDEN" maxlength="24">
+          </div>
+          <div class="row" style="margin-top:8px">
+            <span class="btn small file">Or choose an image…<input type="file" id="picFile" accept="image/*" aria-label="Choose image"></span>
+            <button class="btn small" id="picClear" type="button" hidden>Back to text</button>
+          </div>
+          <label class="check"><input type="checkbox" id="invert"> Invert (for dark drawings on a light background)</label>
+          <canvas id="picPreview" width="600" height="200" aria-label="Picture preview"></canvas>
+        </div>
+
+        <div class="card">
+          <h2><span class="n">3</span>Placement</h2>
+          <div class="presets">
+            <button class="btn small" type="button" data-preset="below"><span>Just below 16 kHz</span><small>13.5–15.8</small></button>
+            <button class="btn small" type="button" data-preset="above"><span>Above 16 kHz (fragile)</span><small>16.5–19.5</small></button>
+            <button class="btn small" type="button" data-preset="mid"><span>Where the music is</span><small>6–10</small></button>
+          </div>
+          <div class="field">
+            <div class="top"><label for="lo">Lowest frequency</label><output id="loOut"></output></div>
+            <input type="range" id="lo" min="2" max="20" step="0.1" value="13.5">
+          </div>
+          <div class="field">
+            <div class="top"><label for="hi">Highest frequency</label><output id="hiOut"></output></div>
+            <input type="range" id="hi" min="2.5" max="21.5" step="0.1" value="15.8">
+          </div>
+          <div class="field">
+            <div class="top"><label for="target">Loudness vs. threshold of hearing</label><output id="targetOut"></output></div>
+            <input type="range" id="target" min="-30" max="20" step="1" value="-10">
+            <p class="hint">Negative = below the quietest sound a young ear can detect, at its loudest moment.</p>
+          </div>
+          <label class="check"><input type="checkbox" id="shape" checked> Follow the hearing curve (louder where the ear is less sensitive)</label>
+          <div class="field">
+            <div class="top"><label for="spl">Assumed listening level</label><output id="splOut"></output></div>
+            <input type="range" id="spl" min="60" max="95" step="1" value="75">
+          </div>
+        </div>
+
+        <div class="card">
+          <h2><span class="n">4</span>Codec test</h2>
+          <div class="field" style="margin-top:0">
+            <label for="kbps">MP3 bitrate</label>
+            <select id="kbps">
+              <option value="96">96 kbps</option>
+              <option value="128" selected>128 kbps</option>
+              <option value="160">160 kbps</option>
+              <option value="192">192 kbps</option>
+              <option value="256">256 kbps</option>
+              <option value="320">320 kbps</option>
+            </select>
+          </div>
+          <p class="hint">The song with the picture is encoded to MP3 and decoded again, then compared with the uncompressed version.</p>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="tiles">
+          <div class="tile" id="tHear"><div class="k">Hearing check</div><div class="v" id="hearV">—</div><div class="d" id="hearD"></div></div>
+          <div class="tile" id="tLevel"><div class="k">Picture strength</div><div class="v" id="levelV">—</div><div class="d" id="levelD"></div></div>
+          <div class="tile" id="tMp3"><div class="k" id="mp3K">After MP3</div><div class="v" id="mp3V">—</div><div class="d" id="mp3D"></div></div>
+        </div>
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+
+        <div class="specCard">
+          <div class="specHead">
+            <h3>Song with the hidden picture <small>· uncompressed</small></h3>
+            <div class="seg" role="group" aria-label="Frequency range">
+              <button type="button" data-range="pic" aria-pressed="true">Around the picture</button>
+              <button type="button" data-range="hi" aria-pressed="false">8–22 kHz</button>
+              <button type="button" data-range="full" aria-pressed="false">Full range</button>
+            </div>
+          </div>
+          <canvas class="spec" id="specWav" aria-label="Spectrogram of the song with the hidden picture"></canvas>
+        </div>
+        <div class="specCard">
+          <div class="specHead">
+            <h3 id="mp3Title">After MP3 encoding and decoding</h3>
+          </div>
+          <canvas class="spec" id="specMp3" aria-label="Spectrogram after MP3"></canvas>
+          <div class="legend"><span><i class="sw"></i>picture band (bars at both edges)</span><span><i class="sw c"></i>16 kHz, where 128 kbps MP3 starts cutting</span></div>
+        </div>
+
+        <div class="card">
+          <div class="actions">
+            <button class="btn" type="button" data-play="orig">▶ Original</button>
+            <button class="btn" type="button" data-play="emb">▶ With picture</button>
+            <button class="btn" type="button" data-play="mp3">▶ After MP3</button>
+            <button class="btn" type="button" data-play="pic">▶ Picture alone, boosted</button>
+            <button class="btn" type="button" id="stopBtn">■ Stop</button>
+            <span class="sep"></span>
+            <button class="btn primary" type="button" id="saveWav">Save song with picture (WAV)</button>
+            <button class="btn" type="button" id="saveMp3" disabled>Save MP3</button>
+            <button class="btn" type="button" id="savePng">Save spectrogram (PNG)</button>
+          </div>
+          <p class="hint" id="saveHint">The MP3 is the file made by the codec test, at the bitrate chosen there; save it once the test shows the picture survives. Anyone can see the picture in a spectrogram viewer, such as the Reveal tab or Audacity.</p>
+        </div>
+
+        <div class="notes">
+          <div class="card"><h2>How the picture is drawn</h2><p>Each pixel column becomes a moment of the song and each row a frequency inside the band. Brightness sets the amplitude, phases are random, and an inverse short-time Fourier transform turns the picture into a faint noise that is added to the music.</p></div>
+          <div class="card"><h2>How audibility is estimated</h2><p>Within each critical band the picture's energy is weighted by the threshold in quiet (Terhardt, 1979) at the chosen listening level. It counts as audible when it exceeds that threshold and is no more than 6 dB below the music in the same band. Young ears can be about 10 dB more sensitive near 14–16 kHz than the formula says, so keep a margin.</p></div>
+          <div class="card"><h2>Why MP3 erases it</h2><p>Encoders discard what the ear cannot hear. At 128 kbps LAME low-passes around 16–17 kHz, so a picture above that line disappears. Just below the line it is kept, but only if it is strong enough for the encoder to spend bits on it. That is the trade-off you are tuning.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== REVEAL ============================== -->
+  <section id="viewReveal" role="tabpanel" aria-labelledby="tabReveal" hidden>
+    <div class="grid">
+      <div class="rail">
+        <div class="card">
+          <h2>Look inside a sound</h2>
+          <div class="row">
+            <span class="btn file">Choose audio file…<input type="file" id="revFile" accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a" aria-label="Choose audio file to reveal"></span>
+            <button class="btn" type="button" id="revUseEmb">Use the song from Hide</button>
+          </div>
+          <div class="meta" id="revMeta">—</div>
+        </div>
+        <div class="card">
+          <h2>Live from the microphone</h2>
+          <div class="row"><button class="btn" type="button" id="micBtn">Start microphone</button></div>
+          <p class="hint" id="micHint">Play the song from another device, near the microphone. Phone and laptop speakers and microphones often roll off above 15 kHz, so pictures placed lower show up better.</p>
+        </div>
+        <div class="card">
+          <h2>Range</h2>
+          <div class="field" style="margin-top:0">
+            <div class="top"><label for="revLo">From</label><output id="revLoOut"></output></div>
+            <input type="range" id="revLo" min="0" max="20" step="0.5" value="8">
+          </div>
+          <div class="field">
+            <div class="top"><label for="revHi">To</label><output id="revHiOut"></output></div>
+            <input type="range" id="revHi" min="1" max="22.05" step="0.05" value="22.05">
+          </div>
+        </div>
+      </div>
+      <div class="main">
+        <div class="specCard">
+          <div class="specHead"><h3 id="revTitle">Spectrogram</h3></div>
+          <canvas class="spec" id="specRev" style="height:340px" aria-label="Spectrogram of the chosen sound"></canvas>
+        </div>
+        <div class="status" id="revStatus" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">Made by <a href="https://lucerojc.github.io/">Jorge C. Lucero</a>. Everything runs in your browser: your audio and pictures are never uploaded. MP3 encoding uses <a href="https://github.com/zhuker/lamejs" rel="noopener">lamejs</a>, a JavaScript port of LAME. Anonymous visit statistics are collected with Google Analytics.</footer>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+<script>
+"use strict";
+/* =====================================================================
+   Constants and small helpers
+   ===================================================================== */
+const SR = 44100, N = 2048, HOP_S = 512, HOP_A = 1024, BIN = SR / N;
+const MAX_SECONDS = 480;
+const CAP_DB = -24;                       // picture RMS never above song RMS - 24 dB
+const $ = (id) => document.getElementById(id);
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+const db10 = (p) => 10 * Math.log10(Math.max(p, 1e-30));
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+function toast(msg, ms = 4200) {
+  const t = $("toast"); t.textContent = msg; t.hidden = false;
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, ms);
+}
+
+/* ---------- FFT (radix-2, in place) ---------- */
+const FFT = (() => {
+  const n = N, lv = Math.log2(n);
+  const cos = new Float64Array(n / 2), sin = new Float64Array(n / 2), rev = new Uint32Array(n);
+  for (let i = 0; i < n / 2; i++) { cos[i] = Math.cos(2 * Math.PI * i / n); sin[i] = Math.sin(2 * Math.PI * i / n); }
+  for (let i = 0; i < n; i++) { let r = 0, x = i; for (let b = 0; b < lv; b++) { r = (r << 1) | (x & 1); x >>= 1; } rev[i] = r; }
+  return function (re, im, inverse) {
+    for (let i = 0; i < n; i++) { const j = rev[i]; if (j > i) { let t = re[i]; re[i] = re[j]; re[j] = t; t = im[i]; im[i] = im[j]; im[j] = t; } }
+    for (let size = 2; size <= n; size <<= 1) {
+      const half = size >> 1, step = n / size;
+      for (let i = 0; i < n; i += size) {
+        for (let j = i, k = 0; j < i + half; j++, k += step) {
+          const c = cos[k], s = inverse ? sin[k] : -sin[k], l = j + half;
+          const tr = re[l] * c - im[l] * s, ti = re[l] * s + im[l] * c;
+          re[l] = re[j] - tr; im[l] = im[j] - ti; re[j] += tr; im[j] += ti;
+        }
+      }
+    }
+  };
+})();
+const HANN = (() => { const w = new Float64Array(N); for (let i = 0; i < N; i++) w[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / N); return w; })();
+const PSCALE = 2 / (N * (3 * N / 8));     // |X|^2 -> one-sided mean-square contribution
+const RE = new Float64Array(N), IM = new Float64Array(N);
+
+/* ---------- psychoacoustics ---------- */
+function athTerhardt(f) {                 // threshold in quiet, dB SPL
+  const k = Math.max(f, 20) / 1000;
+  return 3.64 * Math.pow(k, -0.8) - 6.5 * Math.exp(-0.6 * (k - 3.3) ** 2) + 1e-3 * k ** 4;
+}
+const ZWICKER = [20,100,200,300,400,510,630,770,920,1080,1270,1480,1720,2000,2320,2700,3150,3700,4400,5300,6400,7700,9500,12000,15500,20500];
+function criticalGroups(k0, k1) {
+  const edges = [k0];
+  for (const f of ZWICKER) { const k = Math.round(f / BIN); if (k > k0 && k < k1) edges.push(k); }
+  edges.push(k1 + 1);
+  const g = []; for (let i = 0; i < edges.length - 1; i++) g.push([edges[i], edges[i + 1] - 1]);
+  return g;
+}
+
+/* ---------- band power STFT: P[frame * nb + (k-k0)] ---------- */
+function bandPower(x, k0, k1, hop = HOP_A) {
+  const nb = k1 - k0 + 1, nF = Math.max(1, Math.floor((x.length - N) / hop) + 1);
+  const P = new Float32Array(nF * nb);
+  for (let f = 0; f < nF; f++) {
+    const s = f * hop;
+    for (let i = 0; i < N; i++) { RE[i] = (x[s + i] || 0) * HANN[i]; IM[i] = 0; }
+    FFT(RE, IM, false);
+    const o = f * nb;
+    for (let k = k0; k <= k1; k++) P[o + k - k0] = (RE[k] * RE[k] + IM[k] * IM[k]) * PSCALE;
+  }
+  return { P, nF, nb };
+}
+function meanSquare(x) { let s = 0; for (let i = 0; i < x.length; i++) s += x[i] * x[i]; return s / x.length; }
+
+/* =====================================================================
+   Demo song (plucked strings, bass, hi-hat), deterministic
+   ===================================================================== */
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function demoSong(seconds = 12) {
+  const rnd = mulberry32(1), n = Math.floor(seconds * SR);
+  const L = new Float32Array(n), R = new Float32Array(n);
+  const midi = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  function pluck(freq, dur, amp) {
+    const P = Math.round(SR / freq), buf = new Float32Array(P);
+    for (let i = 0; i < P; i++) buf[i] = rnd() * 2 - 1;
+    const out = new Float32Array(Math.floor(dur * SR));
+    for (let i = 0; i < out.length; i++) { const j = i % P; out[i] = amp * buf[j]; buf[j] = 0.996 * 0.5 * (buf[j] + buf[(j + 1) % P]); }
+    return out;
+  }
+  function add(sig, t0, panR) {
+    const i0 = Math.floor(t0 * SR);
+    for (let i = 0; i < sig.length && i0 + i < n; i++) { L[i0 + i] += (1 - panR) * sig[i]; R[i0 + i] += panR * sig[i]; }
+  }
+  const chords = [[60, 64, 67, 72], [57, 60, 64, 69], [53, 57, 60, 65], [55, 59, 62, 67]], beat = 0.375;
+  for (let t = 0, k = 0; t < seconds - 1.5; t += 1.5, k++) {
+    const ch = chords[k % 4];
+    add(pluck(midi(ch[0] - 24), 1.5, 0.5), t, 0.5);
+    ch.forEach((m, j) => add(pluck(midi(m), 1.2, 0.25), t + j * beat, 0.3 + 0.4 * j / 3));
+  }
+  const hl = Math.floor(0.03 * SR), hat = new Float32Array(hl); let prev = 0;
+  for (let i = 0; i < hl; i++) { const g = (rnd() + rnd() + rnd() - 1.5) * 2 * Math.exp(-8 * i / hl); hat[i] = g - prev; prev = g; }
+  for (let t = 0; t < seconds - 0.1; t += beat / 2) { const i0 = Math.floor(t * SR); for (let i = 0; i < hl; i++) { L[i0 + i] += 0.02 * hat[i]; R[i0 + i] += 0.02 * hat[i]; } }
+  const fade = Math.floor(0.5 * SR);
+  for (let i = 0; i < fade; i++) { const g = 1 - i / fade; L[n - fade + i] *= g; R[n - fade + i] *= g; }
+  let pk = 0; for (let i = 0; i < n; i++) pk = Math.max(pk, Math.abs(L[i]), Math.abs(R[i]));
+  for (let i = 0; i < n; i++) { L[i] *= 0.8 / pk; R[i] *= 0.8 / pk; }
+  return { L, R };
+}
+
+/* =====================================================================
+   Audio decoding, WAV and ZIP writing, saving
+   ===================================================================== */
+async function decodeFile(file, channels = 2) {
+  const buf = await file.arrayBuffer();
+  const ctx = new OfflineAudioContext(channels, 1, SR);
+  return await ctx.decodeAudioData(buf);
+}
+function wavBytes(L, R) {
+  const n = L.length, ch = R ? 2 : 1, data = n * ch * 2, b = new ArrayBuffer(44 + data), v = new DataView(b);
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, "RIFF"); v.setUint32(4, 36 + data, true); w(8, "WAVE"); w(12, "fmt "); v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true); v.setUint16(22, ch, true); v.setUint32(24, SR, true); v.setUint32(28, SR * ch * 2, true);
+  v.setUint16(32, ch * 2, true); v.setUint16(34, 16, true); w(36, "data"); v.setUint32(40, data, true);
+  let o = 44; const q = (x) => Math.max(-32768, Math.min(32767, Math.round(x * 32767)));
+  for (let i = 0; i < n; i++) { v.setInt16(o, q(L[i]), true); o += 2; if (R) { v.setInt16(o, q(R[i]), true); o += 2; } }
+  return new Uint8Array(b);
+}
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC[(c ^ u8[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function zipStore(name, u8) {               // single-file ZIP, stored (no compression)
+  const nm = new TextEncoder().encode(name), crc = crc32(u8), sz = u8.length;
+  const lh = new DataView(new ArrayBuffer(30)), cd = new DataView(new ArrayBuffer(46)), end = new DataView(new ArrayBuffer(22));
+  lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(10, 0, true); lh.setUint16(12, 0x21, true);
+  lh.setUint32(14, crc, true); lh.setUint32(18, sz, true); lh.setUint32(22, sz, true); lh.setUint16(26, nm.length, true);
+  cd.setUint32(0, 0x02014b50, true); cd.setUint16(4, 20, true); cd.setUint16(6, 20, true); cd.setUint16(14, 0x21, true);
+  cd.setUint32(16, crc, true); cd.setUint32(20, sz, true); cd.setUint32(24, sz, true); cd.setUint16(28, nm.length, true);
+  cd.setUint32(42, 0, true);
+  const cdOff = 30 + nm.length + sz;
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, 1, true); end.setUint16(10, 1, true);
+  end.setUint32(12, 46 + nm.length, true); end.setUint32(16, cdOff, true);
+  return new Blob([lh.buffer, nm, u8, cd.buffer, nm, end.buffer], { type: "application/zip" });
+}
+async function saveFile(filename, blob) {
+  const host = window.claude && typeof window.claude.use === "function";
+  if (!host) {
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    return;
+  }
+  let dl = null;
+  try { dl = await window.claude.use("downloads"); } catch (e) { dl = null; }
+  if (!dl) { toast("Saving files isn't available in this view. Open the tool on its own page to save."); return; }
+  let data = blob, name = filename;
+  if (/\.(wav|mp3)$/i.test(filename)) {       // this viewer accepts neither .wav nor .mp3, so wrap them in a .zip
+    data = zipStore(filename, new Uint8Array(await blob.arrayBuffer()));
+    name = filename.replace(/\.(wav|mp3)$/i, ".zip");
+  }
+  try { await dl.save({ filename: name, data }); }
+  catch (e) {
+    if (e && e.code === "declined") return;
+    if (e && e.code === "rate_limited") { toast("Another save is still waiting for your answer."); return; }
+    toast("The file could not be saved here (" + ((e && e.code) || "unavailable") + ").");
+  }
+}
+
+/* =====================================================================
+   Picture: text or image -> luminance mask
+   ===================================================================== */
+const pic = { mode: "text", bitmap: null, name: "" };
+function drawPictureTo(ctx, w, h) {
+  const inv = $("invert").checked;
+  ctx.save();
+  ctx.fillStyle = inv ? "#fff" : "#000"; ctx.fillRect(0, 0, w, h);
+  if (pic.mode === "image" && pic.bitmap) {
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(pic.bitmap, 0, 0, w, h);
+  } else {
+    const txt = ($("picText").value || " ").toUpperCase();
+    ctx.fillStyle = inv ? "#000" : "#fff";
+    let fs = h * 0.62; ctx.font = `700 ${fs}px "IBM Plex Sans", Arial, sans-serif`;
+    const maxW = w * 0.92, mw = ctx.measureText(txt).width;
+    if (mw > maxW) { fs *= maxW / mw; ctx.font = `700 ${fs}px "IBM Plex Sans", Arial, sans-serif`; }
+    ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(txt, w / 2, h / 2 + fs * 0.04);
+  }
+  if (inv) { const d = ctx.getImageData(0, 0, w, h); for (let i = 0; i < d.data.length; i += 4) { d.data[i] = 255 - d.data[i]; d.data[i + 1] = 255 - d.data[i + 1]; d.data[i + 2] = 255 - d.data[i + 2]; } ctx.putImageData(d, 0, 0); }
+  ctx.restore();
+}
+function pictureMask(w, h) {                 // Float32Array h*w, row 0 = top (high frequency)
+  // draw at the preview's 3:1 shape, then stretch onto the time-frequency grid, so the song looks like the preview
+  const src = document.createElement("canvas"); src.width = 900; src.height = 300;
+  drawPictureTo(src.getContext("2d", { willReadFrequently: true }), 900, 300);
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  const ctx = c.getContext("2d", { willReadFrequently: true });
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(src, 0, 0, w, h);
+  const d = ctx.getImageData(0, 0, w, h).data, M = new Float32Array(w * h);
+  for (let i = 0, p = 0; i < M.length; i++, p += 4) {
+    const l = (0.2126 * d[p] + 0.7152 * d[p + 1] + 0.0722 * d[p + 2]) / 255;
+    M[i] = l < 0.06 ? 0 : l;
+  }
+  return M;
+}
+function drawPreview() { const c = $("picPreview"); drawPictureTo(c.getContext("2d"), c.width, c.height); }
+
+/* =====================================================================
+   State
+   ===================================================================== */
+const S = {
+  song: null, name: "", mono: null, songMS: 0,
+  base: null,            // cache of the song's band power + baseline correlation key
+  emb: null,             // {L, R, y (picture signal, scaled), mono}
+  mp3: null, run: 0, view: "pic",
+};
+function params() {
+  let lo = +$("lo").value * 1000, hi = +$("hi").value * 1000;
+  if (hi < lo + 500) hi = lo + 500;
+  hi = Math.min(hi, SR / 2 - 200);
+  return { lo, hi, target: +$("target").value, spl: +$("spl").value, shape: $("shape").checked, kbps: +$("kbps").value };
+}
+function showParams() {
+  const p = params();
+  $("loOut").textContent = (p.lo / 1000).toFixed(1) + " kHz";
+  $("hiOut").textContent = (p.hi / 1000).toFixed(1) + " kHz";
+  const t = +$("target").value; $("targetOut").textContent = (t > 0 ? "+" : "") + t + " dB";
+  $("splOut").textContent = $("spl").value + " dB SPL";
+}
+function setStatus(msg, err) { const s = $("status"); s.textContent = msg || ""; s.classList.toggle("err", !!err); }
+function setTile(id, state, v, d) { const t = $(id); t.dataset.state = state || ""; t.querySelector(".v").innerHTML = v; t.querySelector(".d").textContent = d || ""; }
+
+function loadSong(L, R, name) {
+  let n = L.length; let note = "";
+  if (n > MAX_SECONDS * SR) { n = MAX_SECONDS * SR; note = ` · first ${MAX_SECONDS / 60} min used`; L = L.subarray(0, n); R = R.subarray(0, n); }
+  S.song = { L: Float32Array.from(L), R: Float32Array.from(R) };
+  S.mono = new Float32Array(n); for (let i = 0; i < n; i++) S.mono[i] = 0.5 * (S.song.L[i] + S.song.R[i]);
+  S.songMS = meanSquare(S.mono); S.base = null; S.name = name;
+  $("songMeta").textContent = `${name} · ${(n / SR).toFixed(1)} s · 44.1 kHz stereo${note}`;
+}
+
+/* =====================================================================
+   Embedding
+   ===================================================================== */
+function synthPicture(p) {
+  const n = S.mono.length, k0 = Math.ceil(p.lo / BIN), k1 = Math.floor(p.hi / BIN), rows = k1 - k0 + 1;
+  const nF = Math.ceil(n / HOP_S) + 1, W = Math.min(nF, 8192);
+  const M = pictureMask(W, rows);
+  const shape = new Float64Array(rows), athLo = athTerhardt(k0 * BIN);
+  for (let r = 0; r < rows; r++) {
+    const f = (k1 - r) * BIN;
+    shape[r] = p.shape ? Math.pow(10, Math.min(athTerhardt(f) - athLo, 20) / 20) : 1;
+  }
+  const rnd = mulberry32(7), y = new Float32Array(n + N);
+  for (let j = 0; j < nF; j++) {
+    const col = Math.min(W - 1, Math.floor(j * W / nF));
+    RE.fill(0); IM.fill(0);
+    let any = false;
+    for (let r = 0; r < rows; r++) {
+      const a = M[r * W + col] * shape[r]; if (a <= 0) continue;
+      const k = k1 - r, ph = 2 * Math.PI * rnd(), c = a * Math.cos(ph), s = a * Math.sin(ph);
+      RE[k] = c; IM[k] = s; RE[N - k] = c; IM[N - k] = -s; any = true;
+    }
+    if (!any) continue;
+    FFT(RE, IM, true);
+    const o = j * HOP_S - N / 2;
+    for (let i = 0; i < N; i++) { const t = o + i; if (t >= 0 && t < y.length) y[t] += RE[i] * HANN[i] / N; }
+  }
+  return { y: y.subarray(0, n), k0, k1, rows, M, W, nF };
+}
+
+function audibility(Pimg, Psong, k0, k1, nb, nF, cal, gain2) {
+  const groups = criticalGroups(k0, k1), wT = new Float64Array(nb);
+  for (let k = k0; k <= k1; k++) wT[k - k0] = Math.pow(10, -athTerhardt(k * BIN) / 10);
+  const tot = new Float64Array(nF); let maxTot = 0;
+  for (let f = 0; f < nF; f++) { let s = 0; for (let b = 0; b < nb; b++) s += Pimg[f * nb + b]; tot[f] = s; if (s > maxTot) maxTot = s; }
+  let worst = -Infinity, present = 0, audible = 0;
+  for (let f = 0; f < nF; f++) {
+    let frameAud = false;
+    for (const [a, b] of groups) {
+      let sw = 0, pi = 0, pm = 0;
+      for (let k = a; k <= b; k++) { const i = f * nb + k - k0; sw += Pimg[i] * wT[k - k0]; pi += Pimg[i]; pm += Psong ? Psong[i] : 0; }
+      const ex = db10(sw * gain2) + cal;
+      if (ex > worst) worst = ex;
+      if (Psong && ex > 0 && pi * gain2 > pm * 0.2512) frameAud = true;     // 0.2512 = -6 dB
+    }
+    if (tot[f] > maxTot * 1e-3) { present++; if (frameAud) audible++; }
+  }
+  return { worst, pct: present ? 100 * audible / present : 0 };
+}
+
+function maskGridCorr(syn, P, nF, nb) {
+  // correlation between the drawn picture and the band spectrogram (dB), computed on the
+  // time pattern within each frequency row: rows the codec erased count as lost
+  const cols = new Int32Array(nF);
+  for (let f = 0; f < nF; f++) {
+    const j = Math.min(f * (HOP_A / HOP_S) + Math.round(N / 2 / HOP_S), syn.nF - 1);   // synthesis frame centred like this analysis frame
+    cols[f] = Math.min(syn.W - 1, Math.floor(j * syn.W / syn.nF));
+  }
+  let sxy = 0, sxx = 0, syy = 0;
+  for (let b = 0; b < nb; b++) {
+    const r = syn.rows - 1 - b; let mx = 0, my = 0;
+    for (let f = 0; f < nF; f++) { mx += syn.M[r * syn.W + cols[f]]; my += db10(P[f * nb + b] + 1e-14); }
+    mx /= nF; my /= nF;
+    for (let f = 0; f < nF; f++) {
+      const x = syn.M[r * syn.W + cols[f]] - mx, y = db10(P[f * nb + b] + 1e-14) - my;
+      sxy += x * y; sxx += x * x; syy += y * y;
+    }
+  }
+  return sxx > 0 && syy > 0 ? sxy / Math.sqrt(sxx * syy) : 0;
+}
+
+async function run() {
+  if (!S.song) return;
+  const id = ++S.run, p = params();
+  stopAudio();
+  setStatus("Drawing the picture into the song…");
+  await sleep(10); if (id !== S.run) return;
+
+  const syn = synthPicture(p);
+  if (id !== S.run) return;
+  const { k0, k1 } = syn, nb = k1 - k0 + 1;
+  const key = `${k0}-${k1}`;
+  if (!S.base || S.base.key !== key) {
+    const bp = bandPower(S.mono, k0, k1);
+    S.base = { key, P: bp.P, nF: bp.nF };
+  }
+  const img = bandPower(syn.y, k0, k1);
+  const cal = p.spl - db10(S.songMS);
+
+  // gain so that the loudest moment sits `target` dB from the threshold in quiet
+  const unit = audibility(img.P, null, k0, k1, nb, img.nF, cal, 1);
+  let gain = Math.pow(10, (p.target - unit.worst) / 20);
+  const yMS = meanSquare(syn.y), capMS = S.songMS * Math.pow(10, CAP_DB / 10);
+  let capped = false;
+  if (yMS * gain * gain > capMS) { gain = Math.sqrt(capMS / yMS); capped = true; }
+  const aud = audibility(img.P, S.base.P, k0, k1, nb, Math.min(img.nF, S.base.nF), cal, gain * gain);
+
+  const n = S.mono.length, L = new Float32Array(n), R = new Float32Array(n), y = new Float32Array(n);
+  let pk = 0;
+  for (let i = 0; i < n; i++) { y[i] = gain * syn.y[i]; L[i] = S.song.L[i] + y[i]; R[i] = S.song.R[i] + y[i]; pk = Math.max(pk, Math.abs(L[i]), Math.abs(R[i])); }
+  if (pk > 0.999) { const g = 0.999 / pk; for (let i = 0; i < n; i++) { L[i] *= g; R[i] *= g; y[i] *= g; } }
+  const mono = new Float32Array(n); for (let i = 0; i < n; i++) mono[i] = 0.5 * (L[i] + R[i]);
+  S.emb = { L, R, y, mono, p, syn: { M: syn.M, W: syn.W, nF: syn.nF, rows: syn.rows }, k0, k1 };
+  S.mp3 = null; S.mp3Blob = null; updateMp3Button();
+
+  // tiles: hearing + level
+  const hiNote = p.hi > 14500 ? " Above 14 kHz the formula is optimistic for young ears; check with headphones." : "";
+  if (aud.worst <= 0) setTile("tHear", "good", `Inaudible<span class="pill good">est.</span>`, `Loudest moment ${(-aud.worst).toFixed(0)} dB below the threshold of hearing at ${p.spl} dB SPL.` + hiNote);
+  else if (aud.pct < 1) setTile("tHear", "warn", `Masked<span class="pill warn">est.</span>`, `Up to ${aud.worst.toFixed(0)} dB above threshold, but covered by the music in almost every moment.`);
+  else setTile("tHear", aud.pct < 20 ? "warn" : "bad", `Audible ${aud.pct.toFixed(0)}%<span class="pill ${aud.pct < 20 ? "warn" : "bad"}">of moments</span>`, `Up to ${aud.worst.toFixed(0)} dB above threshold and not covered by the music.`);
+  const rel = db10(meanSquare(y) / S.songMS);
+  setTile("tLevel", capped ? "warn" : "", `${rel.toFixed(0)} dB`, capped ? `Re. the song's RMS. Capped at ${CAP_DB} dB to protect ears and tweeters.` : "Re. the song's RMS level.");
+
+  drawHideSpectrograms();
+  setStatus("");
+  await mp3Test(id);
+}
+
+/* =====================================================================
+   MP3 round trip
+   ===================================================================== */
+async function encodeMp3(L, R, kbps, onProgress, id) {
+  if (!window.lamejs || !window.lamejs.Mp3Encoder) throw new Error("The MP3 encoder (lamejs) did not load. Check your connection and reload.");
+  // stereo, like real music files: LAME's low-pass depends on the bitrate per channel
+  const enc = new lamejs.Mp3Encoder(2, SR, kbps), parts = [], CH = 1152 * 24;
+  const q = (v) => v >= 1 ? 32767 : v <= -1 ? -32768 : Math.round(v * 32767);
+  let t0 = performance.now();
+  for (let s = 0; s < L.length; s += CH) {
+    const m = Math.min(CH, L.length - s), bl = new Int16Array(m), br = new Int16Array(m);
+    for (let i = 0; i < m; i++) { bl[i] = q(L[s + i]); br[i] = q(R[s + i]); }
+    const out = enc.encodeBuffer(bl, br); if (out.length) parts.push(new Uint8Array(out.buffer, out.byteOffset, out.length).slice());
+    if (performance.now() - t0 > 60) { onProgress(s / L.length); await sleep(0); t0 = performance.now(); if (id !== S.run) return null; }
+  }
+  const last = enc.flush(); if (last.length) parts.push(new Uint8Array(last.buffer, last.byteOffset, last.length).slice());
+  return new Blob(parts, { type: "audio/mpeg" });
+}
+function findLag(ref, d) {
+  const L = Math.min(8192, ref.length >> 1), s0 = Math.min(Math.floor(0.5 * SR), Math.max(0, ref.length - L - 5000));
+  let best = 0, bl = 0;
+  for (let lag = -1024; lag <= 4096; lag += 1) {
+    let c = 0; const o = s0 + lag; if (o < 0 || o + L > d.length) continue;
+    for (let i = 0; i < L; i += 2) c += ref[s0 + i] * d[o + i];
+    if (c > best) { best = c; bl = lag; }
+  }
+  return bl;
+}
+function shift(d, lag, n) {
+  const out = new Float32Array(n);
+  for (let i = 0; i < n; i++) { const j = i + lag; out[i] = j >= 0 && j < d.length ? d[j] : 0; }
+  return out;
+}
+function updateMp3Button() {
+  const b = $("saveMp3");
+  b.disabled = !S.mp3Blob;
+  b.textContent = S.mp3Blob ? `Save MP3 (${S.mp3Kbps} kbps)` : "Save MP3";
+}
+async function mp3Test(id) {
+  const e = S.emb, kbps = e.p.kbps;
+  $("mp3K").textContent = `After MP3 ${kbps} kbps`;
+  $("mp3Title").innerHTML = `After MP3 ${kbps} kbps <small style="color:var(--muted);font-weight:400">· encoded and decoded in your browser</small>`;
+  setTile("tMp3", "", "…", "Encoding…");
+  try {
+    const blob = await encodeMp3(e.L, e.R, kbps, (f) => setStatus(`Encoding MP3 at ${kbps} kbps… ${Math.round(f * 100)}%`), id);
+    if (!blob || id !== S.run) return;
+    S.mp3Blob = blob; S.mp3Kbps = kbps; updateMp3Button();
+    setStatus("Decoding MP3…");
+    const ab = await decodeFile(blob, 2);
+    if (id !== S.run) return;
+    const c0 = ab.getChannelData(0), c1 = ab.numberOfChannels > 1 ? ab.getChannelData(1) : c0;
+    const dm = new Float32Array(c0.length); for (let i = 0; i < dm.length; i++) dm[i] = 0.5 * (c0[i] + c1[i]);
+    const lag = findLag(e.mono, dm);
+    const d = shift(dm, lag, e.mono.length);
+    S.mp3 = d; S.mp3L = shift(c0, lag, e.mono.length); S.mp3R = shift(c1, lag, e.mono.length);
+    const nb = e.k1 - e.k0 + 1;
+    const pw = bandPower(e.mono, e.k0, e.k1), pm = bandPower(d, e.k0, e.k1);
+    const nF = Math.min(pw.nF, pm.nF, S.base.nF);
+    const cBase = maskGridCorr(e.syn, S.base.P, nF, nb), cWav = maskGridCorr(e.syn, pw.P, nF, nb), cMp3 = maskGridCorr(e.syn, pm.P, nF, nb);
+    const keep = Math.max(0, Math.min(1.2, (cMp3 - cBase) / Math.max(1e-6, cWav - cBase))) * 100;
+    const st = keep >= 70 ? "good" : keep >= 30 ? "warn" : "bad";
+    const word = keep >= 70 ? "Survives" : keep >= 30 ? "Partly kept" : "Erased";
+    setTile("tMp3", st, `${Math.min(100, keep).toFixed(0)}% kept<span class="pill ${st}">${word}</span>`, "Similarity of the picture after MP3, relative to the uncompressed file.");
+    drawHideSpectrograms();
+    setStatus("");
+  } catch (err) {
+    if (id !== S.run) return;
+    setTile("tMp3", "bad", "Not tested", "");
+    setStatus(err.message || String(err), true);
+  }
+}
+
+/* =====================================================================
+   Spectrogram drawing
+   ===================================================================== */
+const LUT = (() => {
+  const st = [[0, 0, 0, 4], [.13, 28, 16, 68], [.25, 79, 18, 123], [.38, 129, 37, 129], [.5, 181, 54, 122], [.63, 229, 80, 100], [.75, 251, 135, 97], [.88, 254, 194, 135], [1, 252, 253, 191]];
+  const t = new Uint8ClampedArray(256 * 3);
+  for (let i = 0; i < 256; i++) {
+    const x = i / 255; let k = 0; while (k < st.length - 2 && x > st[k + 1][0]) k++;
+    const a = st[k], b = st[k + 1], u = (x - a[0]) / (b[0] - a[0]);
+    for (let c = 0; c < 3; c++) t[i * 3 + c] = a[c + 1] + u * (b[c + 1] - a[c + 1]);
+  }
+  return t;
+})();
+const PAD = { l: 46, r: 10, t: 6, b: 22 };
+function prepCanvas(cv) {
+  const dpr = Math.min(2, window.devicePixelRatio || 1), w = cv.clientWidth, h = cv.clientHeight;
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  const ctx = cv.getContext("2d"); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  return { ctx, dpr, w, h };
+}
+function drawSpectrogram(cv, x, opt) {
+  const { ctx, dpr, w, h } = prepCanvas(cv);
+  ctx.fillStyle = css("--panel"); ctx.fillRect(0, 0, cv.width, cv.height);
+  const pw = Math.max(10, Math.round((w - PAD.l - PAD.r) * dpr)), ph = Math.max(10, Math.round((h - PAD.t - PAD.b) * dpr));
+  const fmin = opt.fmin, fmax = opt.fmax, dur = x ? x.length / SR : 1;
+  if (x && x.length > N) {
+    const kLo = Math.max(1, Math.floor(fmin / BIN)), kHi = Math.min(N / 2, Math.ceil(fmax / BIN));
+    const col = new Float32Array(ph), grid = new Float32Array(pw * ph); let gmax = -1e9;
+    const rowBins = [];
+    for (let yy = 0; yy < ph; yy++) {
+      const fTop = fmax - yy * (fmax - fmin) / ph, fBot = fmax - (yy + 1) * (fmax - fmin) / ph;
+      rowBins.push([Math.max(kLo, Math.floor(fBot / BIN)), Math.min(kHi, Math.max(Math.floor(fBot / BIN), Math.ceil(fTop / BIN) - 1))]);
+    }
+    for (let c = 0; c < pw; c++) {
+      const s = Math.max(0, Math.min(x.length - N, Math.round((c + 0.5) / pw * x.length - N / 2)));
+      for (let i = 0; i < N; i++) { RE[i] = x[s + i] * HANN[i]; IM[i] = 0; }
+      FFT(RE, IM, false);
+      for (let yy = 0; yy < ph; yy++) {
+        const [a, b] = rowBins[yy]; let m = 0;
+        for (let k = a; k <= b; k++) { const p = RE[k] * RE[k] + IM[k] * IM[k]; if (p > m) m = p; }
+        const v = db10(m); grid[yy * pw + c] = v; if (v > gmax) gmax = v;
+      }
+    }
+    const lo = gmax - 105, hi = gmax - 20, img = ctx.createImageData(pw, ph);
+    for (let i = 0; i < pw * ph; i++) {
+      const u = Math.max(0, Math.min(255, Math.round((grid[i] - lo) / (hi - lo) * 255)));
+      img.data[i * 4] = LUT[u * 3]; img.data[i * 4 + 1] = LUT[u * 3 + 1]; img.data[i * 4 + 2] = LUT[u * 3 + 2]; img.data[i * 4 + 3] = 255;
+    }
+    ctx.putImageData(img, Math.round(PAD.l * dpr), Math.round(PAD.t * dpr));
+  } else {
+    ctx.fillStyle = "#000"; ctx.fillRect(Math.round(PAD.l * dpr), Math.round(PAD.t * dpr), pw, ph);
+  }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const PW = w - PAD.l - PAD.r, PH = h - PAD.t - PAD.b;
+  const fy = (f) => PAD.t + (fmax - f) / (fmax - fmin) * PH;
+  if (opt.band) {
+    const y1 = fy(Math.min(fmax, opt.band[1])), y2 = fy(Math.max(fmin, opt.band[0]));
+    if (y2 > y1) {
+      ctx.fillStyle = css("--accent-2"); ctx.fillRect(PAD.l - 4, y1, 3, y2 - y1);
+      ctx.fillRect(PAD.l + PW + 1, y1, 3, y2 - y1);
+    }
+  }
+  if (opt.mark16 && 16000 > fmin && 16000 < fmax) {
+    ctx.strokeStyle = css("--cyan"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(PAD.l, fy(16000) + 0.5); ctx.lineTo(PAD.l + PW, fy(16000) + 0.5); ctx.stroke();
+  }
+  ctx.fillStyle = css("--muted"); ctx.font = `11px ${css("--mono")}`; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  const span = fmax - fmin, stepK = span > 15000 ? 4000 : span > 8000 ? 2000 : span > 3000 ? 1000 : 500;
+  for (let f = Math.ceil(fmin / stepK) * stepK; f <= fmax + 1; f += stepK) if (fy(f) < PAD.t + PH - 7) ctx.fillText((f / 1000).toFixed(stepK < 1000 ? 1 : 0), PAD.l - 6, fy(f));
+  ctx.save(); ctx.translate(11, PAD.t + PH / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = "center"; ctx.fillText("kHz", 0, 0); ctx.restore();
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  const tStep = dur > 240 ? 60 : dur > 90 ? 30 : dur > 40 ? 10 : dur > 15 ? 5 : 2;
+  for (let t = 0; t <= dur + 1e-6; t += tStep) {
+    const px = PAD.l + t / dur * PW;
+    ctx.fillText(dur > 90 ? `${Math.floor(t / 60)}:${String(Math.round(t % 60)).padStart(2, "0")}` : `${t} s`, Math.min(px, PAD.l + PW - 12), PAD.t + PH + 5);
+  }
+}
+function viewRange() {
+  if (S.view === "full") return [0, SR / 2];
+  if (S.view === "hi" || !S.emb) return [8000, SR / 2];
+  const lo = S.emb.p.lo, hi = S.emb.p.hi, m = Math.max(1500, 0.6 * (hi - lo));
+  return [Math.max(0, lo - m), Math.min(SR / 2, hi + m)];
+}
+function drawHideSpectrograms() {
+  if (!S.emb) return;
+  const [fmin, fmax] = viewRange(), band = [S.emb.p.lo, S.emb.p.hi];
+  drawSpectrogram($("specWav"), S.emb.mono, { fmin, fmax, band, mark16: true });
+  drawSpectrogram($("specMp3"), S.mp3, { fmin, fmax, band, mark16: true });
+}
+
+/* =====================================================================
+   Playback
+   ===================================================================== */
+let AC = null, SRC = null;
+function stopAudio() { if (SRC) { try { SRC.stop(); } catch (e) { } SRC = null; } }
+function play(L, R) {
+  try {
+    if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SR });
+    AC.resume();
+    stopAudio();
+    const b = AC.createBuffer(R ? 2 : 1, L.length, SR);
+    b.copyToChannel(L, 0); if (R) b.copyToChannel(R, 1);
+    SRC = AC.createBufferSource(); SRC.buffer = b; SRC.connect(AC.destination); SRC.start();
+  } catch (e) { toast("Audio playback is not available here."); }
+}
+document.querySelectorAll("[data-play]").forEach(b => b.addEventListener("click", () => {
+  if (!S.emb) return;
+  const k = b.dataset.play;
+  if (k === "orig") play(S.song.L, S.song.R);
+  else if (k === "emb") play(S.emb.L, S.emb.R);
+  else if (k === "mp3") { if (S.mp3) play(S.mp3L, S.mp3R); else toast("The MP3 version is not ready yet."); }
+  else if (k === "pic") {
+    const y = S.emb.y; let pk = 0; for (let i = 0; i < y.length; i++) pk = Math.max(pk, Math.abs(y[i]));
+    const g = pk > 0 ? 0.25 / pk : 0, z = new Float32Array(y.length); for (let i = 0; i < y.length; i++) z[i] = y[i] * g;
+    play(z);
+  }
+}));
+$("stopBtn").addEventListener("click", stopAudio);
+
+/* =====================================================================
+   Controls
+   ===================================================================== */
+let deb = null;
+function schedule(ms = 350) { showParams(); clearTimeout(deb); deb = setTimeout(run, ms); }
+["lo", "hi", "target", "spl"].forEach(id => $(id).addEventListener("input", () => schedule()));
+["shape", "kbps"].forEach(id => $(id).addEventListener("change", () => schedule(50)));
+$("invert").addEventListener("change", () => { drawPreview(); schedule(50); });
+$("picText").addEventListener("input", () => { pic.mode = "text"; drawPreview(); schedule(500); });
+$("picFile").addEventListener("change", async (ev) => {
+  const f = ev.target.files[0]; if (!f) return;
+  try {
+    pic.bitmap = await createImageBitmap(f); pic.mode = "image"; pic.name = f.name;
+    const c = document.createElement("canvas"); c.width = 64; c.height = 64; const x = c.getContext("2d");
+    x.drawImage(pic.bitmap, 0, 0, 64, 64); const d = x.getImageData(0, 0, 64, 64).data; let s = 0;
+    for (let i = 0; i < d.length; i += 4) s += (d[i] + d[i + 1] + d[i + 2]) / 765 * (d[i + 3] / 255);
+    $("invert").checked = s / 4096 > 0.5;
+    $("picClear").hidden = false; drawPreview(); schedule(50);
+  } catch (e) { toast("That image could not be read. Try a PNG or JPG."); }
+  ev.target.value = "";
+});
+$("picClear").addEventListener("click", () => { pic.mode = "text"; pic.bitmap = null; $("picClear").hidden = true; $("invert").checked = false; drawPreview(); schedule(50); });
+const PRESETS = { below: [13.5, 15.8, -10, true], above: [16.5, 19.5, -20, true], mid: [6, 10, 20, true] };
+document.querySelectorAll("[data-preset]").forEach(b => b.addEventListener("click", () => {
+  const [lo, hi, t, sh] = PRESETS[b.dataset.preset];
+  $("lo").value = lo; $("hi").value = hi; $("target").value = t; $("shape").checked = sh; schedule(50);
+}));
+document.querySelectorAll("[data-range]").forEach(b => b.addEventListener("click", () => {
+  S.view = b.dataset.range;
+  document.querySelectorAll("[data-range]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  drawHideSpectrograms();
+}));
+$("demoBtn").addEventListener("click", () => { const d = demoSong(); loadSong(d.L, d.R, "Demo song"); schedule(10); });
+$("songFile").addEventListener("change", async (ev) => {
+  const f = ev.target.files[0]; if (!f) return;
+  setStatus("Reading " + f.name + "…");
+  try {
+    const ab = await decodeFile(f, 2);
+    if (ab.duration < 2) throw new Error("short");
+    const L = ab.getChannelData(0), R = ab.numberOfChannels > 1 ? ab.getChannelData(1) : ab.getChannelData(0);
+    loadSong(L, R, f.name); schedule(10);
+  } catch (e) { setStatus("That file could not be decoded. Try WAV, MP3, FLAC or OGG, at least 2 seconds long.", true); }
+  ev.target.value = "";
+});
+function baseName() { return (S.name || "song").replace(/\.[^.]+$/, "").replace(/[^\w\- ]+/g, "").trim() || "song"; }
+$("saveWav").addEventListener("click", () => {
+  if (!S.emb) return;
+  saveFile(`${baseName()}-with-picture.wav`, new Blob([wavBytes(S.emb.L, S.emb.R)], { type: "audio/wav" }));
+});
+$("saveMp3").addEventListener("click", () => {
+  if (!S.mp3Blob) return;
+  saveFile(`${baseName()}-with-picture-${S.mp3Kbps}kbps.mp3`, S.mp3Blob);
+});
+$("savePng").addEventListener("click", () => {
+  $("specWav").toBlob((b) => b && saveFile("spectrogram.png", b), "image/png");
+});
+
+/* tabs */
+function showTab(which) {
+  const hide = which !== "reveal";
+  $("viewHide").hidden = !hide; $("viewReveal").hidden = hide;
+  $("tabHide").setAttribute("aria-selected", String(hide)); $("tabReveal").setAttribute("aria-selected", String(!hide));
+  if (hide) drawHideSpectrograms(); else drawReveal();
+}
+$("tabHide").addEventListener("click", () => showTab("hide"));
+$("tabReveal").addEventListener("click", () => showTab("reveal"));
+
+/* =====================================================================
+   Reveal tab
+   ===================================================================== */
+const RV = { x: null, name: "", mic: null };
+function revRange() {
+  let lo = +$("revLo").value * 1000, hi = +$("revHi").value * 1000; if (hi < lo + 1000) hi = Math.min(SR / 2, lo + 1000);
+  $("revLoOut").textContent = (lo / 1000).toFixed(1) + " kHz"; $("revHiOut").textContent = (hi / 1000).toFixed(1) + " kHz";
+  return [lo, hi];
+}
+function drawReveal() {
+  if (RV.mic) return;
+  const [lo, hi] = revRange();
+  drawSpectrogram($("specRev"), RV.x, { fmin: lo, fmax: hi, mark16: true });
+}
+["revLo", "revHi"].forEach(id => $(id).addEventListener("input", () => { revRange(); if (!RV.mic) { clearTimeout(drawReveal._t); drawReveal._t = setTimeout(drawReveal, 120); } }));
+$("revFile").addEventListener("change", async (ev) => {
+  const f = ev.target.files[0]; if (!f) return;
+  stopMic();
+  $("revStatus").textContent = "Reading " + f.name + "…";
+  try {
+    const ab = await decodeFile(f, 1);
+    let x = ab.getChannelData(0); if (x.length > MAX_SECONDS * SR) x = x.subarray(0, MAX_SECONDS * SR);
+    RV.x = Float32Array.from(x); RV.name = f.name;
+    $("revMeta").textContent = `${f.name} · ${(x.length / SR).toFixed(1)} s`; $("revTitle").textContent = "Spectrogram of " + f.name;
+    $("revStatus").textContent = ""; drawReveal();
+  } catch (e) { $("revStatus").textContent = "That file could not be decoded."; }
+  ev.target.value = "";
+});
+$("revUseEmb").addEventListener("click", () => {
+  if (!S.emb) return; stopMic();
+  RV.x = S.emb.mono; RV.name = "song with picture";
+  $("revMeta").textContent = `${S.name} with picture · ${(RV.x.length / SR).toFixed(1)} s`; $("revTitle").textContent = "Spectrogram of the song with the picture";
+  drawReveal();
+});
+function stopMic() {
+  if (!RV.mic) return;
+  cancelAnimationFrame(RV.mic.raf); RV.mic.stream.getTracks().forEach(t => t.stop()); RV.mic.ctx.close();
+  RV.mic = null; $("micBtn").textContent = "Start microphone";
+}
+$("micBtn").addEventListener("click", async () => {
+  if (RV.mic) { stopMic(); drawReveal(); return; }
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error("none");
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const an = ctx.createAnalyser(); an.fftSize = 2048; an.smoothingTimeConstant = 0;
+    ctx.createMediaStreamSource(stream).connect(an);
+    RV.mic = { stream, ctx, an, raf: 0 };
+    $("micBtn").textContent = "Stop microphone"; $("revTitle").textContent = "Live microphone";
+    const cv = $("specRev"); const { ctx: g, dpr, w, h } = prepCanvas(cv);
+    g.fillStyle = "#000"; g.fillRect(0, 0, cv.width, cv.height);
+    const bins = new Float32Array(an.frequencyBinCount), fs = ctx.sampleRate, binHz = fs / an.fftSize;
+    const tick = () => {
+      if (!RV.mic) return;
+      const [lo, hi] = revRange(), H = cv.height, colW = Math.max(1, Math.round(2 * dpr));
+      an.getFloatFrequencyData(bins);
+      g.drawImage(cv, -colW, 0);
+      const col = g.createImageData(colW, H);
+      for (let yy = 0; yy < H; yy++) {
+        const f = hi - (yy + 0.5) / H * (hi - lo), k = Math.min(bins.length - 1, Math.max(0, Math.round(f / binHz)));
+        const u = Math.max(0, Math.min(255, Math.round((bins[k] + 115) / 95 * 255)));
+        for (let c = 0; c < colW; c++) { const o = (yy * colW + c) * 4; col.data[o] = LUT[u * 3]; col.data[o + 1] = LUT[u * 3 + 1]; col.data[o + 2] = LUT[u * 3 + 2]; col.data[o + 3] = 255; }
+      }
+      g.putImageData(col, cv.width - colW, 0);
+      RV.mic.raf = requestAnimationFrame(tick);
+    };
+    tick();
+  } catch (e) {
+    $("micHint").textContent = "The microphone is not available in this view. Open the tool on its own web page, allow microphone access, and try again.";
+  }
+});
+
+/* redraw on resize */
+let rz = null;
+new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { if (!$("viewHide").hidden) drawHideSpectrograms(); else drawReveal(); }, 150); }).observe(document.querySelector(".wrap"));
+
+/* start with the demo, in a realistic working state */
+(async function init() {
+  showParams(); revRange();
+  try { await Promise.race([document.fonts.ready, sleep(1500)]); } catch (e) { }
+  drawPreview();
+  const d = demoSong(); loadSong(d.L, d.R, "Demo song");
+  drawSpectrogram($("specRev"), null, { fmin: 8000, fmax: SR / 2, mark16: true });
+  run();
+})();
+</script>
+</body>
+</html>
