@@ -109,7 +109,7 @@
 <div class="about"><div class="card">
   <p><b>The chart.</b> The horizontal axis is the second formant F2 (front vowels on the left), and the vertical axis is the first formant F1 (close vowels at the top), as in a phonetician's vowel chart. Before calibration the axes show your formants in Hz, scaled by the voice type. After calibration they show normalized values: your vowels are mapped onto an adult-male reference space, so you can compare yourself with the reference vowels.</p>
   <p><b>Calibration.</b> Your “ee”, “ah” and “oo” (each measured from the spectrum averaged over the hold) define a mapping, affine in log-frequency, from your vowel space onto the corner vowels [i], [a], [u] of the selected language, so your corner vowels land exactly on that language's. If [u] cannot be measured, [i] and [a] alone scale each axis separately. Working in log-frequency matches the main source of speaker differences: vocal-tract length scales all formants by roughly the same factor. The calibration is remembered in this browser.</p>
-  <p><b>Tracking.</b> The microphone signal is low-pass filtered and resampled to 11 kHz. In each 30 ms window a 14th-order LPC fit gives resonance candidates, and an autocorrelation test checks that the window is voiced. A tracker picks F1 and F2 by sharpness, rank and continuity, rejects pairs outside the vowel space, and accepts a sudden jump only when several consecutive frames agree. The background noise spectrum is learned during pauses; a resonance that does not rise clearly above it is not accepted as a formant, so a voice that is too soft shows a gap rather than a wrong point.</p>
+  <p><b>Tracking.</b> The microphone signal is low-pass filtered and resampled to 11 kHz. In each 30 ms window a 14th-order LPC fit gives resonance candidates, and an autocorrelation test checks that the window is voiced. A tracker picks F1 and F2 by sharpness, rank and continuity, rejects pairs outside the vowel space, and accepts a sudden jump only when several consecutive frames agree. The background noise spectrum is learned during pauses; a resonance that does not rise clearly above it is not accepted as a formant, so a voice that is too soft shows a gap rather than a wrong point. Close back vowels such as [u] and [o] get a second analysis: their F1 and F2 lie close together and F2 is often 20–25 dB weaker than F1, so a full-band fit tends to merge them. When the spectrum has little energy where front vowels have their F2, the signal is low-pass filtered to 1.7 kHz, F1 is located and filtered out, and F2 is sought in what remains.</p>
   <p><b>Reference vowels.</b> Average F1 and F2 of adult male speakers (the chart's reference scale), from: Peterson &amp; Barney (1952), <i>J. Acoust. Soc. Am.</i> 24, 175–184 (Generic; [ə] is the neutral uniform tube); Hillenbrand, Getty, Clark &amp; Wheeler (1995), <i>J. Acoust. Soc. Am.</i> 97, 3099–3111 (American English); Escudero, Boersma, Rauber &amp; Bion (2009), <i>J. Acoust. Soc. Am.</i> 126, 1379–1393 (Brazilian and European Portuguese); Chládková, Escudero &amp; Boersma (2011), <i>J. Acoust. Soc. Am.</i> 130, 416–428 (Iberian and Peruvian Spanish). Real speakers vary a lot, and dialects differ: treat the circles as neighbourhoods, not exact targets. High voices (above about 250 Hz) make formants hard to measure for any method, because the harmonics sample the spectrum too sparsely.</p>
   <p><b>Recording.</b> Records your voice together with the tracked values (about 60 per second); both stay in your browser. Replay plays the audio while the trace redraws in step with it, and the player's position bar lets you jump to any moment. The WAV (mono, 16-bit, at the microphone's sample rate) can be opened in Praat; the CSV has time, voicing, f0, raw F1 and F2 in Hz, the F1 and F2 shown on the chart, and in its header the track time at which the audio starts.</p>
 </div></div>
@@ -205,7 +205,7 @@ function makeTracker() {
       this.voiced = voiced;
       if (!voiced) { this.voicedRun = 0; if (++this.unvoicedRun > 4) { this.prev = this.ema = null; this.pend = []; } return null; }
       this.unvoicedRun = 0; this.voicedRun++;
-      const pt = pickPair(candidates(lpcFrame), v.f0, this.prev);
+      const pt = choosePair(lpcFrame, rawFrame, v.f0, this.prev, this);
       if (!pt) return null;
       // outlier gate: a big jump is accepted only if the next frames agree with it
       if (this.prev && chartDist(pt, this.prev) > 0.12) { this.pend.push(pt); if (this.pend.length < 3) return null;
@@ -233,6 +233,56 @@ function decode(x, fs) {
 }
 
 
+
+// ---------- back-vowel low-band analysis (F1 and F2 both below ~1.4 kHz) ----------
+// Close back vowels ([u], [o]) have F1 and F2 a few hundred Hz apart and almost no energy above them;
+// a full-band LPC often merges the two into one peak, and F2 of a rounded [u] lies ~25 dB below F1.
+// When the spectrum looks back (bandRatio below HB_FRONT), the frame is low-passed to 1.7 kHz and
+// decimated by 3 (3675 Hz); F1 is taken from an order-8 fit, removed with its inverse filter, and
+// F2 is taken from an order-6 fit of what remains.
+const LB_DEC = 3, FSB = FSA / LB_DEC;
+let LB_H = null;
+function lbFilter() { if (LB_H) return LB_H; const M = 24, fc = 1700 / FSA, h = []; let s = 0;
+  for (let k = -M; k <= M; k++) { const v = (k === 0 ? 2 * fc : Math.sin(2 * Math.PI * fc * k) / (Math.PI * k)) * (0.54 + 0.46 * Math.cos(Math.PI * k / M)); h.push(v); s += v; }
+  return LB_H = h.map(v => v / s); }
+function lpcN(fr, p) { const R = autocorr(fr, p); if (R[0] <= 0) return null; const a = new Float64Array(p + 1); a[0] = 1; let e = R[0] * (1 + 1e-6);
+  for (let i = 1; i <= p; i++) { let acc = R[i]; for (let j = 1; j < i; j++) acc += a[j] * R[i - j]; const k = -acc / e; const t = a.slice(); for (let j = 1; j < i; j++) a[j] = t[j] + k * t[i - j]; a[i] = k; e *= 1 - k * k; if (e <= 0) return null; }
+  return a; }
+function polesOf(a, fs, fmin, fmax, bwmax) { const c = []; roots(a).forEach(([r, i]) => { if (i <= 0) return; const f = Math.atan2(i, r) * fs / (2 * Math.PI), bw = -Math.log(Math.hypot(r, i)) * fs / Math.PI; if (f > fmin && f < fmax && bw > 0 && bw < bwmax) c.push({ f, bw }); }); return c.sort((x, y) => x.f - y.f); }
+function lowBandPair(raw, f0) {
+  const h = lbFilter(), M = (h.length - 1) / 2, n = Math.floor((raw.length - 2 * M) / LB_DEC); if (n < 60) return null;
+  const y = new Float32Array(n); for (let i = 0; i < n; i++) { const c = M + i * LB_DEC; let acc = 0; for (let k = -M; k <= M; k++) acc += raw[c + k] * h[k + M]; y[i] = acc; }
+  const w = hamming(n), fr = new Float32Array(n); for (let i = 0; i < n; i++) fr[i] = (y[i] - 0.9 * (i ? y[i - 1] : 0)) * w[i];
+  const aF1 = lpcN(fr, 8); if (!aF1) return null;
+  const f1c = polesOf(aF1, FSB, Math.max(190 * K, 1.15 * f0), 900 * K, 400); if (!f1c.length) return null;
+  const F1 = f1c.reduce((p, q) => q.bw < p.bw ? q : p); // sharpest resonance in the F1 range
+  // inverse-filter F1 (zero pair at the F1 pole), on the pre-emphasized band signal
+  const rr = Math.exp(-Math.PI * F1.bw / FSB), th = 2 * Math.PI * F1.f / FSB, b1 = -2 * rr * Math.cos(th), b2 = rr * rr;
+  const z = new Float32Array(n); for (let i = 0; i < n; i++) { const p0 = y[i] - 0.9 * (i ? y[i - 1] : 0), p1 = i ? y[i - 1] - 0.9 * (i > 1 ? y[i - 2] : 0) : 0, p2 = i > 1 ? y[i - 2] - 0.9 * (i > 2 ? y[i - 3] : 0) : 0; z[i] = (p0 + b1 * p1 + b2 * p2) * w[i]; }
+  const aF2 = lpcN(z, LB_ORDER2); if (!aF2) return null;
+  const f2c = polesOf(aF2, FSB, Math.max(F1.f * 1.5, F1.f + 250 * K), LB_F2MAX * K, LB_BW2); if (!f2c.length) return null;
+  const F2 = f2c.reduce((p, q) => q.bw < p.bw ? q : p);
+  return [F1.f, F2.f];
+}
+// HB_FRONT: set from an adult male voice ([i] >= -1.3 dB, [u] <= -12.5 dB, 5th/95th percentiles); checked live on a male and a female voice
+let LB_F2MAX = 1200, HB_FRONT = -7, LB_ORDER2 = 6, LB_BW2 = 450;
+// share of energy in the F2 region of front vowels (1.7–3.2 kHz) relative to that of back vowels (0.55–1.3 kHz), dB
+const BR_CACHE = {};
+function bandRatio(raw) { // cos/sin tables cached per frame length (the frame length is fixed by the microphone's sample rate)
+  const n = raw.length; let T = BR_CACHE[n];
+  if (!T) { const w = hamming(n), mk = (lo, hi) => { const rows = []; for (let f = lo; f <= hi; f += FSA / n) { const om = 2 * Math.PI * f / FSA, c = new Float32Array(n), s = new Float32Array(n); for (let i = 0; i < n; i++) { c[i] = w[i] * Math.cos(om * i); s[i] = w[i] * Math.sin(om * i); } rows.push([c, s]); } return rows; };
+    T = BR_CACHE[n] = { hi: mk(1700, 3200), lo: mk(550, 1300) }; }
+  const e = rows => { let t = 0; for (const [c, s] of rows) { let re = 0, im = 0; for (let i = 0; i < n; i++) { re += raw[i] * c[i]; im += raw[i] * s[i]; } t += re * re + im * im; } return t; };
+  return 10 * Math.log10((e(T.hi) + 1e-20) / (e(T.lo) + 1e-20));
+}
+function choosePair(lpcFr, raw, f0, prev, tr) {
+  const full = pickPair(candidates(lpcFr), f0, prev);
+  if (full && full[1] < 1400 * K) return full; // full band already sees a back vowel
+  const hb = bandRatio(raw); tr.hb = hb;
+  if (hb >= HB_FRONT) return full; // spectrum looks front (or central): trust the full band
+  const low = lowBandPair(raw, f0); // spectrum looks back: F1 and F2 are probably both low
+  return low && plausible(low[0], low[1]) ? low : null;
+}
 
 // ---------- reference vowels (approximate adult-male averages, [F1, F2] Hz) ----------
 const LANGS = {
