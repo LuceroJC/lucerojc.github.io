@@ -3,16 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Free online real-time vowel chart: speak or sing and see your first two formants (F1, F2) traced live. Calibrate to your voice, compare with the vowels of English, Portuguese or Spanish, practise target vowels, record and export. Runs in your browser; audio is never uploaded.">
-<meta property="og:title" content="Vowel Space Live — a real-time vowel chart">
-<meta property="og:description" content="Speak or sing and watch your formants traced live on the F1–F2 vowel chart. Calibration, reference vowels, target practice, recording. Runs in your browser.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://lucerojc.github.io/vowel-space-live/">
-<link rel="canonical" href="https://lucerojc.github.io/vowel-space-live/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231e5bc6'/%3E%3Cpath d='M3 4h10l-3 9H6z' fill='none' stroke='%23fff' stroke-width='1.3'/%3E%3Ccircle cx='9' cy='7' r='1.8' fill='%23ffd166'/%3E%3C/svg%3E">
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YW8VKF9R66"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-YW8VKF9R66");</script>
-<title>Vowel Space Live — a real-time vowel chart</title>
+<title>Vowel Space Live</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
 <style>
@@ -119,10 +110,9 @@
   <p><b>The chart.</b> The horizontal axis is the second formant F2 (front vowels on the left), and the vertical axis is the first formant F1 (close vowels at the top), as in a phonetician's vowel chart. Before calibration the axes show your formants in Hz, scaled by the voice type. After calibration they show normalized values: your vowels are mapped onto an adult-male reference space, so you can compare yourself with the reference vowels.</p>
   <p><b>Calibration.</b> Your “ee”, “ah” and “oo” (each measured from the spectrum averaged over the hold) define a mapping, affine in log-frequency, from your vowel space onto the corner vowels [i], [a], [u] of the selected language, so your corner vowels land exactly on that language's. If [u] cannot be measured, [i] and [a] alone scale each axis separately. Working in log-frequency matches the main source of speaker differences: vocal-tract length scales all formants by roughly the same factor. The calibration is remembered in this browser.</p>
   <p><b>Tracking.</b> The microphone signal is low-pass filtered and resampled to 11 kHz. In each 30 ms window a 14th-order LPC fit gives resonance candidates, and an autocorrelation test checks that the window is voiced. A tracker picks F1 and F2 by sharpness, rank and continuity, rejects pairs outside the vowel space, and accepts a sudden jump only when several consecutive frames agree. The background noise spectrum is learned during pauses; a resonance that does not rise clearly above it is not accepted as a formant, so a voice that is too soft shows a gap rather than a wrong point.</p>
-  <p><b>Reference vowels.</b> Approximate averages for adult male speakers, from published acoustic studies; real speakers vary a lot, and dialects differ. Treat the circles as neighbourhoods, not exact targets. High voices (above about 250 Hz) make formants hard to measure for any method, because the harmonics sample the spectrum too sparsely.</p>
+  <p><b>Reference vowels.</b> Average F1 and F2 of adult male speakers (the chart's reference scale), from: Peterson &amp; Barney (1952), <i>J. Acoust. Soc. Am.</i> 24, 175–184 (Generic; [ə] is the neutral uniform tube); Hillenbrand, Getty, Clark &amp; Wheeler (1995), <i>J. Acoust. Soc. Am.</i> 97, 3099–3111 (American English); Escudero, Boersma, Rauber &amp; Bion (2009), <i>J. Acoust. Soc. Am.</i> 126, 1379–1393 (Brazilian and European Portuguese); Chládková, Escudero &amp; Boersma (2011), <i>J. Acoust. Soc. Am.</i> 130, 416–428 (Iberian and Peruvian Spanish). Real speakers vary a lot, and dialects differ: treat the circles as neighbourhoods, not exact targets. High voices (above about 250 Hz) make formants hard to measure for any method, because the harmonics sample the spectrum too sparsely.</p>
   <p><b>Recording.</b> Records your voice together with the tracked values (about 60 per second); both stay in your browser. Replay plays the audio while the trace redraws in step with it, and the player's position bar lets you jump to any moment. The WAV (mono, 16-bit, at the microphone's sample rate) can be opened in Praat; the CSV has time, voicing, f0, raw F1 and F2 in Hz, the F1 and F2 shown on the chart, and in its header the track time at which the audio starts.</p>
 </div></div>
-<footer style="max-width:1200px;margin:0 auto;padding:0 24px 36px;font-size:13px;color:var(--mut)">Made by <a href="https://lucerojc.github.io/" style="color:inherit">Jorge C. Lucero</a>. Everything runs in your browser: your voice and recordings are never uploaded. Anonymous visit statistics are collected with Google Analytics.</footer>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
@@ -246,10 +236,16 @@ function decode(x, fs) {
 
 // ---------- reference vowels (approximate adult-male averages, [F1, F2] Hz) ----------
 const LANGS = {
-  'Generic (IPA)': [['i', 270, 2290], ['e', 400, 2100], ['ɛ', 530, 1840], ['æ', 660, 1720], ['a', 750, 1350], ['ɑ', 730, 1090], ['ɔ', 570, 840], ['o', 420, 800], ['u', 300, 870], ['ə', 500, 1500]],
+  // Peterson & Barney (1952), averages for 33 men; [ə]: uniform 17.5 cm tube (500/1500 Hz)
+  'Generic (Peterson & Barney)': [['i', 270, 2290], ['ɪ', 390, 1990], ['ɛ', 530, 1840], ['æ', 660, 1720], ['ɑ', 730, 1090], ['ɔ', 570, 840], ['ʊ', 440, 1020], ['u', 300, 870], ['ʌ', 640, 1190], ['ɝ', 490, 1350], ['ə', 500, 1500]],
+  // Hillenbrand, Getty, Clark & Wheeler (1995), averages for 45 men
   'English (American)': [['i', 342, 2322], ['ɪ', 427, 2034], ['e', 476, 2089], ['ɛ', 580, 1799], ['æ', 588, 1952], ['ʌ', 623, 1200], ['ɑ', 768, 1333], ['ɔ', 652, 997], ['o', 497, 910], ['ʊ', 469, 1122], ['u', 378, 997], ['ɝ', 474, 1379]],
-  'Português (Brasil)': [['i', 307, 2213], ['e', 402, 2005], ['ɛ', 552, 1793], ['a', 717, 1308], ['ɔ', 568, 911], ['o', 412, 827], ['u', 328, 795]],
-  'Español': [['i', 286, 2147], ['e', 458, 1814], ['a', 638, 1353], ['o', 460, 1019], ['u', 322, 992]],
+  // Escudero, Boersma, Rauber & Bion (2009), Table I, 10 male speakers per variety
+  'Português (Brasil)': [['i', 285, 2198], ['e', 357, 2028], ['ɛ', 518, 1831], ['a', 683, 1329], ['ɔ', 532, 927], ['o', 372, 804], ['u', 310, 761]],
+  'Português (Portugal)': [['i', 284, 2161], ['e', 355, 1987], ['ɛ', 455, 1836], ['a', 661, 1365], ['ɔ', 491, 934], ['o', 363, 843], ['u', 303, 814]],
+  // Chládková, Escudero & Boersma (2011), Table I, 10 male speakers per variety
+  'Español (España)': [['i', 327, 2195], ['e', 464, 1832], ['a', 658, 1389], ['o', 488, 1003], ['u', 361, 799]],
+  'Español (Perú)': [['i', 323, 2186], ['e', 455, 1929], ['a', 612, 1356], ['o', 483, 942], ['u', 371, 824]],
 };
 
 // ---------- calibration: log-affine map from the speaker's i/a/u to the reference i/a/u ----------
@@ -385,7 +381,7 @@ const CAL_EX = {
   en: { i: '“ee” as in see', a: '“ah” as in father', u: '“oo” as in boot' },
   pt: { i: '“i” como em vi', a: '“a” como em pá', u: '“u” como em nu' },
   es: { i: '“i” como en sí', a: '“a” como en pan', u: '“u” como en tú' } };
-const calEx = v => { const l = $('lang').value; return (l.startsWith('Português') ? CAL_EX.pt : l === 'Español' ? CAL_EX.es : CAL_EX.en)[v]; };
+const calEx = v => { const l = $('lang').value; return (l.startsWith('Português') ? CAL_EX.pt : l.startsWith('Español') ? CAL_EX.es : CAL_EX.en)[v]; };
 $('cal').onclick = async () => { if (!micOn) { await startMic(); if (!micOn) return; }
   cal = null; K = +$('voice').value; VS_MARGIN = 0.25; freshTracker(); calib = { step: 0, pts: {}, R: null, n: 0, skip: 0, f0s: [], tries: 0, live: null, waitPause: false, quiet: 0 }; showCalStep(); };
 // where each calibration vowel's F1/F2 can be, for any adult or child voice (Hz); [u] allows fronted variants
