@@ -63,6 +63,13 @@
     background: var(--card); }
   #scan.ok { border-color: #9cc3a2; background: #eef6ef; color: var(--ok); }
   #scan.bad { border-color: #e2b48f; background: #fbf1e8; color: var(--warn); }
+  #hint { padding: 10px 14px; border-radius: 8px; font: 14px/1.45 system-ui, sans-serif;
+    border: 1px solid #e8d48a; border-left: 4px solid #c99a2e; background: #fdf6d9; color: #4a3b16;
+    display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  #hint b { font-weight: 700; }
+  #hint[hidden], .drop img[hidden] { display: none; }   /* `hidden` loses to a display rule otherwise */
+  #hint button { font: 600 13px system-ui, sans-serif; padding: 5px 10px; border-radius: 6px;
+    border: 1px solid #8a6a1c; background: #fff; color: #6b5214; cursor: pointer; }
   .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
   button { font: 600 14px system-ui, sans-serif; padding: 9px 16px; border-radius: 7px; cursor: pointer;
     border: 1px solid var(--ink); background: var(--ink); color: #fff; }
@@ -72,6 +79,17 @@
   #fallback img { max-width: 160px; border: 1px solid var(--line); display: block; margin-top: 6px; }
   details { font: 14px/1.6 system-ui, sans-serif; color: #3c3933; }
   details summary { cursor: pointer; font-weight: 600; }
+.more-tools { max-width:1180px; margin:28px auto 0; padding:14px 28px 0;
+  display:flex; flex-wrap:wrap; gap:10px 18px; align-items:baseline;
+  border-top:1px solid var(--line);
+  font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
+.more-tools > span { font-weight:600; font-size:12px; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--muted); }
+.more-tools a { color:var(--ink); text-decoration:none; border:1px solid var(--line);
+  background:var(--card); border-radius:7px; padding:7px 12px; transition:border-color .15s; }
+.more-tools a:hover { border-color:var(--accent); }
+.more-tools a b { font-weight:600; }
+.more-tools a span { color:var(--muted); }
   footer { max-width: 1180px; margin: 0 auto; padding: 0 28px 30px; font: 12px system-ui, sans-serif; color: var(--muted); }
   .err { color: var(--accent); font: 13px system-ui, sans-serif; margin-top: 6px; }
 </style>
@@ -145,6 +163,7 @@
   <section class="preview" aria-label="Result">
     <div class="stage"><canvas id="out" aria-label="Generated QR code"></canvas></div>
     <div id="scan">Checking whether the code scans…</div>
+    <div id="hint" hidden></div>
     <div class="status">
       <div class="stat"><b>Version</b><span id="sVer">–</span></div>
       <div class="stat"><b>Modules</b><span id="sMod">–</span></div>
@@ -177,6 +196,11 @@
     </details>
   </section>
 </main>
+<nav class="more-tools" aria-label="More tools">
+  <span>More tools</span>
+  <a href="/spectral-ink/"><b>Spectral Ink</b> <span>hide a picture inside a song</span></a>
+  <a href="/vowel-space-live/"><b>Vowel Space Live</b> <span>a real-time vowel chart</span></a>
+</nav>
 <footer>Made by <a href="https://lucerojc.github.io/">Jorge C. Lucero</a>. Everything runs in your browser: your picture is never uploaded. The sample picture is an AI-generated line drawing. Anonymous visit statistics are collected with Google Analytics. QR Code is a registered trademark of DENSO WAVE INCORPORATED.</footer>
 
 <script>
@@ -428,6 +452,61 @@ if (typeof module !== "undefined") module.exports = QR;
   mv.innerHTML = '<option value="1">Size: automatic</option>' +
     Array.from({ length: 39 }, (_, i) => `<option value="${i + 2}">Version ≥ ${i + 2} (${(i + 2) * 4 + 17}×${(i + 2) * 4 + 17})</option>`).join("");
 
+  // ---------- is this a photograph? ----------
+  // Line art is almost all pure black and white; a photograph is mostly mid-grey, and mid-grey
+  // dithers into dots that look exactly like the QR pattern. Measured on real images, line art
+  // and waveforms score below 0.25 here and photographs above 0.40.
+  const PHOTO_MID = 0.30;        // fraction of mid-tone pixels above which we treat it as a photo
+  const PHOTO_VERSION = 12;      // 65 modules: ~390px of picture instead of ~220px
+  let verTouched = false;        // true once the viewer picks a size themselves
+  let autoBumped = false;        // true while the size is one we chose, not the viewer
+
+  function midToneFraction(img) {
+    // Sample finely: at a coarse size, thin ink averages into grey and line art
+    // is mistaken for a photograph. Measured here, line art stays under 0.14 and
+    // photographs start around 0.38.
+    const S = 384;
+    const c = document.createElement("canvas"); c.width = c.height = S;
+    const g = c.getContext("2d", { willReadFrequently: true });
+    g.fillStyle = "#fff"; g.fillRect(0, 0, S, S);   // transparent PNGs read as white, not black
+    const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    const side = Math.min(iw, ih);
+    g.imageSmoothingQuality = "high";
+    g.drawImage(img, (iw - side) / 2, (ih - side) / 2, side, side, 0, 0, S, S);
+    let d;
+    try { d = g.getImageData(0, 0, S, S).data; } catch (e) { return 0; }
+    let mid = 0;
+    for (let i = 0; i < S * S; i++) {
+      const v = (0.299 * d[4 * i] + 0.587 * d[4 * i + 1] + 0.114 * d[4 * i + 2]) / 255;
+      if (v > 0.22 && v < 0.78) mid++;
+    }
+    return mid / (S * S);
+  }
+
+  function offerLargerCode(img) {
+    const hint = $("hint");
+    hint.hidden = true;
+    if (verTouched) return;                       // they are steering; don't interfere
+    if (midToneFraction(img) < PHOTO_MID) {       // line art: undo any size we chose earlier
+      if (autoBumped) { mv.value = "1"; autoBumped = false; }
+      return;
+    }
+    if (+mv.value >= PHOTO_VERSION) return;
+    mv.value = String(PHOTO_VERSION);             // setting .value fires no event, so render below
+    autoBumped = true;
+    hint.innerHTML = '<span><b>Photograph detected</b>, so the code was made larger \u2014 ' +
+      'more of the picture survives that way. A smaller code is easier to scan.</span>';
+    const btn = document.createElement("button");
+    btn.textContent = "Use the smallest code";
+    btn.onclick = () => {
+      mv.value = "1"; hint.hidden = true; verTouched = true; autoBumped = false;
+      track("photo_hint_undo"); render();
+    };
+    hint.appendChild(btn);
+    hint.hidden = false;
+    track("photo_hint");
+  }
+
   // ---------- image → grayscale at target resolution ----------
   function grayAt(W) {
     const c = document.createElement("canvas"); c.width = c.height = W;
@@ -659,6 +738,7 @@ if (typeof module !== "undefined") module.exports = QR;
       srcImage = im; track("image_loaded");
       $("thumb").src = url; $("thumb").hidden = false;
       $("dropText").innerHTML = `${f.name}<br><small>Click or drop to replace</small>`;
+      offerLargerCode(im);
       render();
     };
     im.onerror = () => ($("err").textContent = "Couldn't read that image.");
@@ -685,6 +765,7 @@ if (typeof module !== "undefined") module.exports = QR;
   }
   ["text", "ecl", "minver", "sub", "dither", "protect", "invert", "maskfit", "dark", "light"]
     .forEach((id) => $(id).addEventListener("input", queue));
+  mv.addEventListener("input", () => { verTouched = true; $("hint").hidden = true; });
 
   render();
 

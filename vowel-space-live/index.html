@@ -52,6 +52,17 @@
   #calBar { height:6px; background:#d6e7dc; border-radius:3px; margin-top:8px; overflow:hidden; } #calBar div { height:100%; width:0; background:var(--live); }
   #calState { font-size:12.5px; color:var(--mut); margin-top:6px; }
   #recInfo { font-size:12.5px; color:var(--mut); font-family:'IBM Plex Mono',monospace; margin-top:6px; }
+.more-tools { max-width:1200px; margin:0 auto 34px; padding:14px 24px 0;
+  display:flex; flex-wrap:wrap; gap:10px 18px; align-items:baseline;
+  border-top:1px solid var(--line);
+  font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
+.more-tools > span { font-weight:600; font-size:12px; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--mut); }
+.more-tools a { color:var(--ink); text-decoration:none; border:1px solid var(--line);
+  background:var(--card); border-radius:7px; padding:7px 12px; transition:border-color .15s; }
+.more-tools a:hover { border-color:var(--live); }
+.more-tools a b { font-weight:600; }
+.more-tools a span { color:var(--mut); }
   .about { max-width:1200px; margin:0 auto; padding:0 24px 40px; }
   .about .card { font-size:14px; line-height:1.55; columns:2 340px; column-gap:28px; }
   .about p { margin:0 0 10px; break-inside:avoid; }
@@ -113,6 +124,11 @@
   <p><b>Reference vowels.</b> Average F1 and F2 of adult male speakers (the chart's reference scale), from: Peterson &amp; Barney (1952), <i>J. Acoust. Soc. Am.</i> 24, 175–184 (Generic; [ə] is the neutral uniform tube); Hillenbrand, Getty, Clark &amp; Wheeler (1995), <i>J. Acoust. Soc. Am.</i> 97, 3099–3111 (American English); Escudero, Boersma, Rauber &amp; Bion (2009), <i>J. Acoust. Soc. Am.</i> 126, 1379–1393 (Brazilian and European Portuguese); Chládková, Escudero &amp; Boersma (2011), <i>J. Acoust. Soc. Am.</i> 130, 416–428 (Iberian and Peruvian Spanish). Real speakers vary a lot, and dialects differ: treat the circles as neighbourhoods, not exact targets. High voices (above about 250 Hz) make formants hard to measure for any method, because the harmonics sample the spectrum too sparsely.</p>
   <p><b>Recording.</b> Records your voice together with the tracked values (about 60 per second); both stay in your browser. Replay plays the audio while the trace redraws in step with it, and the player's position bar lets you jump to any moment. The WAV (mono, 16-bit, at the microphone's sample rate) can be opened in Praat; the CSV has time, voicing, f0, raw F1 and F2 in Hz, the F1 and F2 shown on the chart, and in its header the track time at which the audio starts.</p>
 </div></div>
+<nav class="more-tools" aria-label="More tools">
+  <span>More tools</span>
+  <a href="/halftone-qr/"><b>Halftone QR</b> <span>a picture inside a QR code</span></a>
+  <a href="/spectral-ink/"><b>Spectral Ink</b> <span>hide a picture inside a song</span></a>
+</nav>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
