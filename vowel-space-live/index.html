@@ -1,4 +1,28 @@
 <!DOCTYPE html>
+<!--
+  Vowel Space Live — https://lucerojc.github.io/vowel-space-live/
+  Copyright (c) 2026 Jorge C. Lucero
+
+  MIT License
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+-->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -52,11 +76,13 @@
   "@type": "Person",
   "name": "Jorge C. Lucero",
   "url": "https://lucerojc.github.io/"
- }
+ },
+ "license": "https://opensource.org/license/mit"
 }
 </script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YW8VKF9R66"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-YW8VKF9R66");</script>
+<script>/* Analytics run only on the original site, so copies of this page report nowhere. */
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+if(["lucerojc.github.io","lucerojc-github-io.translate.goog"].indexOf(location.hostname)>=0){var g=document.createElement("script");g.async=true;g.src="https://www.googletagmanager.com/gtag/js?id=G-YW8VKF9R66";document.head.appendChild(g);gtag("js",new Date());gtag("config","G-YW8VKF9R66");}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
 <style>
@@ -105,7 +131,7 @@
   #calBar { height:6px; background:#d6e7dc; border-radius:3px; margin-top:8px; overflow:hidden; } #calBar div { height:100%; width:0; background:var(--live); }
   #calState { font-size:12.5px; color:var(--mut); margin-top:6px; }
   #recInfo { font-size:12.5px; color:var(--mut); font-family:'IBM Plex Mono',monospace; margin-top:6px; }
-.more-tools { max-width:1200px; margin:0 auto 34px; padding:14px 24px 0;
+.more-tools { max-width:1200px; margin:0 auto 14px; padding:14px 24px 0;
   display:flex; flex-wrap:wrap; gap:10px 18px; align-items:baseline;
   border-top:1px solid var(--line);
   font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
@@ -116,6 +142,8 @@
 .more-tools a:hover { border-color:var(--live); }
 .more-tools a b { font-weight:600; }
 .more-tools a span { color:var(--mut); }
+  .site-foot { max-width:1200px; margin:0 auto; padding:0 24px 34px; font-size:13px; line-height:1.55; color:var(--mut); }
+  .site-foot a { color:inherit; }
   .about { max-width:1200px; margin:0 auto; padding:0 24px 40px; }
   .about .card { font-size:14px; line-height:1.55; columns:2 340px; column-gap:28px; }
   .about p { margin:0 0 10px; break-inside:avoid; }
@@ -182,6 +210,7 @@
   <a href="/halftone-qr/"><b>Halftone QR</b> <span>a picture inside a QR code</span></a>
   <a href="/spectral-ink/"><b>Spectral Ink</b> <span>hide a picture inside a song</span></a>
 </nav>
+<footer class="site-foot">Made by <a href="https://lucerojc.github.io/">Jorge C. Lucero</a>. Everything runs in your browser: your voice is never uploaded. Anonymous visit statistics are collected with Google Analytics. © 2026 Jorge C. Lucero. Code released under the <a href="https://opensource.org/license/mit" rel="license">MIT licence</a>: free to use and adapt, provided this notice is kept. A link back to <a href="https://lucerojc.github.io/vowel-space-live/">lucerojc.github.io/vowel-space-live/</a> is appreciated.</footer>
 <script>
 'use strict';
 const $ = id => document.getElementById(id);
