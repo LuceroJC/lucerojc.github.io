@@ -28,10 +28,4 @@
     <priority>0.8</priority>
     <image:image><image:loc>https://lucerojc.github.io/spectral-ink/og.png</image:loc></image:image>
   </url>
-  <url>
-    <loc>https://lucerojc.github.io/vowel-space-live/</loc>
-    <lastmod>2026-11-08</lastmod>
-    <priority>0.8</priority>
-    <image:image><image:loc>https://lucerojc.github.io/vowel-space-live/og.png</image:loc></image:image>
-  </url>
 </urlset>
