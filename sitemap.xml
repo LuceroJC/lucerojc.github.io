@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://lucerojc.github.io/</loc>
     <lastmod>2026-11-06</lastmod>
@@ -17,17 +18,20 @@
   </url>
   <url>
     <loc>https://lucerojc.github.io/halftone-qr/</loc>
-    <lastmod>2026-11-02</lastmod>
+    <lastmod>2026-11-08</lastmod>
     <priority>0.8</priority>
+    <image:image><image:loc>https://lucerojc.github.io/halftone-qr/og.png</image:loc></image:image>
   </url>
   <url>
     <loc>https://lucerojc.github.io/spectral-ink/</loc>
-    <lastmod>2026-11-03</lastmod>
+    <lastmod>2026-11-08</lastmod>
     <priority>0.8</priority>
+    <image:image><image:loc>https://lucerojc.github.io/spectral-ink/og.png</image:loc></image:image>
   </url>
   <url>
     <loc>https://lucerojc.github.io/vowel-space-live/</loc>
-    <lastmod>2026-11-05</lastmod>
+    <lastmod>2026-11-08</lastmod>
     <priority>0.8</priority>
+    <image:image><image:loc>https://lucerojc.github.io/vowel-space-live/og.png</image:loc></image:image>
   </url>
 </urlset>
